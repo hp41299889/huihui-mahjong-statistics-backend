@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
+import { success, fail } from "../../utils/http";
 import { postgres } from "../../services";
 import { Player } from "../../entities";
 
@@ -10,13 +11,23 @@ export {
 
 const repo = postgres.getRepository(Player);
 
-const createPlayer = async (req: Request, res: Response) => {
-    const player = repo.create(req.body);
-    await repo.save(player);
-    res.json(player);
+const createPlayer = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const player = repo.create(req.body);
+        const result = await repo.save(player);
+        success(res, result);
+    } catch (err) {
+        fail(res, err);
+        next(err);
+    };
 };
 
-const getPlayers = async (req: Request, res: Response) => {
-    const players = await repo.find();
-    res.json(players);
+const getPlayers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = await repo.find();
+        success(res, result);
+    } catch (err) {
+        fail(res, err);
+        next(err);
+    };
 };
