@@ -18,7 +18,8 @@ const postgres = new DataSource({
     synchronize: true,
     entities: [
         entity.Player,
-        entity.Record
+        entity.Record,
+        entity.Round
     ]
 });
 
@@ -29,7 +30,6 @@ const postgresInit = async () => {
         })
         .catch((err) => {
             console.log(err);
-
             console.log('postgres connect fail');
         });
 };

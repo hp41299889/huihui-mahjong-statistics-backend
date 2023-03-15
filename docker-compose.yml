@@ -11,7 +11,7 @@ services:
     ports:
       - "${HUIHUI_POSTGRES_PORT}:${HUIHUI_POSTGRES_PORT}"
     environment:
-      POSTGRES_USER: ${HUIHUI_POSTGRES_USERNAME}
+      POSTGRES_USER: ${HUIHUI_POSTGRES_USER}
       POSTGRES_PASSWORD: ${HUIHUI_POSTGRES_PASSWORD}
       POSTGRES_DB: ${HUIHUI_POSTGRES_DB}
     volumes:
@@ -23,6 +23,7 @@ services:
     depends_on:
       - postgres
     image: dpage/pgadmin4
+    restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: ${HUIHUI_PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${HUIHUI_PGADMIN_PASSWORD}

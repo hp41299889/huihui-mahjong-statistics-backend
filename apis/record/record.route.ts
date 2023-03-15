@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import {
     createRecord,
     getRecords
@@ -10,7 +11,7 @@ const router = Router();
 router.route('/')
     .get(getRecords);
 
-router.route('/:playerName')
+router.route('/:roundUid')
     .post(createRecord)
 
 export default router;

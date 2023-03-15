@@ -12,7 +12,7 @@ const appConfig = {
 };
 
 const postgresConfig = {
-    username: env.HUIHUI_POSTGRES_USERNAME,
+    username: env.HUIHUI_POSTGRES_USER,
     password: env.HUIHUI_POSTGRES_PASSWORD,
     host: env.HUIHUI_POSTGRES_HOST,
     port: env.HUIHUI_POSTGRES_PORT || 5432,

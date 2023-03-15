@@ -6,7 +6,8 @@ import {
     UpdateDateColumn,
     OneToMany
 } from 'typeorm';
-import { Record } from './record';
+
+import { Round } from './round';
 
 @Entity()
 export class Player {
@@ -16,8 +17,17 @@ export class Player {
     @Column()
     name: string;
 
-    @OneToMany(() => Record, record => record.player)
-    record: Record[];
+    @OneToMany(() => Round, round => round.east)
+    east_round: Round[];
+
+    @OneToMany(() => Round, round => round.south)
+    south_round: Round[];
+
+    @OneToMany(() => Round, round => round.west)
+    west_round: Round[];
+
+    @OneToMany(() => Round, round => round.north)
+    north_round: Round[];
 
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
