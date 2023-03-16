@@ -39,10 +39,10 @@ const getLastRound = async (req: Request, res: Response, next: NextFunction) => 
         const response = {
             uid: result.uid,
             player: [
-                { east: result.east },
-                { south: result.south },
-                { west: result.west },
-                { north: result.north }
+                result.east,
+                result.south,
+                result.west,
+                result.north
             ]
         };
         success(res, response);
