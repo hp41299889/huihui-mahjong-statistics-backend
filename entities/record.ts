@@ -4,6 +4,7 @@ import {
     Column,
     PrimaryGeneratedColumn,
     CreateDateColumn,
+    JoinColumn,
 } from 'typeorm';
 
 import { Round } from './round';

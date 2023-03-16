@@ -3,8 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import { Round } from "../../entities";
 import { success, fail } from "../../utils/http";
 import { IRound } from "./interface";
-import { findPlayerById } from "../../models/player";
+import { findPlayerById, findPlayerByName } from "../../models/player";
 import { findLastRound, saveRound } from "../../models/round";
+import { findLastRecordByRound } from "../../models/record";
 
 export {
     createRound,
@@ -13,12 +14,12 @@ export {
 
 const createRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { deskType, base, point, eastId, southId, westId, northId }: IRound = req.body;
+        const { deskType, base, point, eastName, southName, westName, northName }: IRound = req.body;
         const round = new Round();
-        const east = await findPlayerById(eastId);
-        const south = await findPlayerById(southId);
-        const west = await findPlayerById(westId);
-        const north = await findPlayerById(northId);
+        const east = await findPlayerByName(eastName);
+        const south = await findPlayerByName(southName);
+        const west = await findPlayerByName(westName);
+        const north = await findPlayerByName(northName);
         round.deskType = deskType;
         round.base = base;
         round.point = point;
@@ -29,24 +30,31 @@ const createRound = async (req: Request, res: Response, next: NextFunction) => {
         const result = await saveRound(round);
         success(res, result);
     } catch (err) {
-        throw err;
+        next(err);
+        fail(res, err);
     };
 };
 
 const getLastRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await findLastRound();
-        const response = {
-            uid: result.uid,
+        const round = await findLastRound();
+        const record = await findLastRecordByRound(round);
+        console.log(record);
+
+        const result = {
+            uid: round.uid,
             player: [
-                result.east,
-                result.south,
-                result.west,
-                result.north
-            ]
+                round.east.name,
+                round.south.name,
+                round.west.name,
+                round.north.name
+            ],
+            // circle: record.circle,
+            // wind: record.dealer
         };
-        success(res, response);
+        success(res, result);
     } catch (err) {
-        throw err;
+        next(err);
+        fail(res, err);
     };
 };

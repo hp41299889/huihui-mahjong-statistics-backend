@@ -8,8 +8,8 @@ interface IRound {
     deskType: DeskType;
     base: number;
     point: number;
-    eastId: number;
-    southId: number;
-    westId: number;
-    northId: number;
+    eastName: string;
+    southName: string;
+    westName: string;
+    northName: string;
 };
