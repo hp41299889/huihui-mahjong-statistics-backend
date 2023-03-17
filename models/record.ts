@@ -17,14 +17,19 @@ const findAllRecords = async () => {
     };
 };
 
-const findLastRecordByRound = async (round: Round) => {
-    //TODO findLastRecordByRound
+const findLastRecordByRound = async () => {
     try {
-        return await repo.createQueryBuilder('record')
-            .where('record.roundUid = :roundUid')
-            .orderBy('record.createdAt', 'DESC')
-            .take(1)
-            .getOne();
+        return await repo.findOne({
+            relations: [
+                'round'
+            ],
+            where: {
+
+            },
+            order: {
+                createdAt: 'DESC'
+            }
+        });
     } catch (err) {
         throw err;
     };

@@ -38,9 +38,7 @@ const createRound = async (req: Request, res: Response, next: NextFunction) => {
 const getLastRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const round = await findLastRound();
-        const record = await findLastRecordByRound(round);
-        console.log(record);
-
+        const record = await findLastRecordByRound();
         const result = {
             uid: round.uid,
             player: [
@@ -49,8 +47,8 @@ const getLastRound = async (req: Request, res: Response, next: NextFunction) => 
                 round.west.name,
                 round.north.name
             ],
-            // circle: record.circle,
-            // wind: record.dealer
+            circle: record.circle,
+            wind: record.dealer
         };
         success(res, result);
     } catch (err) {
