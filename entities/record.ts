@@ -71,7 +71,7 @@ class Record {
     })
     point: number | null;
 
-    @ManyToOne(() => Round, round => round.record)
+    @ManyToOne(() => Round, round => round.records)
     round: Round;
 
     @CreateDateColumn({ type: 'timestamp' })

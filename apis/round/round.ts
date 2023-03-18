@@ -12,6 +12,14 @@ export {
     getLastRound
 };
 
+const currentRound = {
+    uid: '',
+    players: ['', '', '', ''],
+    circle: '',
+    dealer: '',
+    dealerCount: 0,
+};
+
 const createRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { deskType, base, point, eastName, southName, westName, northName }: IRound = req.body;
@@ -37,20 +45,36 @@ const createRound = async (req: Request, res: Response, next: NextFunction) => {
 
 const getLastRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const round = await findLastRound();
-        const record = await findLastRecordByRound();
-        const result = {
-            uid: round.uid,
-            player: [
+        if (currentRound.uid) {
+            console.log('yes');
+            const record = await findLastRecordByRound(currentRound.uid);
+            //isDealerContinue
+        } else {
+            const round = await findLastRound();
+            console.log('no');
+            currentRound.uid = round.uid;
+            currentRound.players = [
                 round.east.name,
                 round.south.name,
                 round.west.name,
                 round.north.name
-            ],
-            circle: record.circle,
-            wind: record.dealer
+            ];
+            currentRound.circle = 'east';
+            currentRound.dealer = 'east';
+            currentRound.dealerCount = 0;
         };
-        success(res, result);
+        // const result = {
+        //     uid: round.uid,
+        //     player: [
+        //         round.east.name,
+        //         round.south.name,
+        //         round.west.name,
+        //         round.north.name
+        //     ],
+        //     circle: record ? record.circle : 'east',
+        //     wind: record ? record.dealer : 'east'
+        // };
+        success(res, currentRound);
     } catch (err) {
         next(err);
         fail(res, err);

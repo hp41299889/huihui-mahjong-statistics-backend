@@ -51,7 +51,7 @@ class Round {
     north: Player;
 
     @OneToMany(() => Record, (record) => record.round)
-    record: Record[];
+    records: Record[];
 
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
