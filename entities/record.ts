@@ -35,29 +35,25 @@ class Record {
     uid: string;
 
     @Column({
-        type: 'enum',
-        enum: WindEnum,
-        nullable: true
+        nullable: true, type: 'smallint'
     })
-    winner: WindEnum | null;
+    winner: number | null;
 
-    @Column({ nullable: true, })
+    @Column({ nullable: true })
     loser: string | null;
 
     @Column({
-        type: 'enum',
-        enum: WindEnum
+        type: 'smallint'
     })
-    dealer: WindEnum;
+    dealer: number;
 
     @Column({ type: 'smallint' })
     dealerCount: number;
 
     @Column({
-        type: 'enum',
-        enum: WindEnum
+        type: 'smallint'
     })
-    circle: WindEnum;
+    circle: number;
 
     @Column({
         type: 'enum',

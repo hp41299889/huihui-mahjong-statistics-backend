@@ -6,17 +6,18 @@ import { IRound } from "./interface";
 import { findPlayerById, findPlayerByName } from "../../models/player";
 import { findLastRound, saveRound } from "../../models/round";
 import { findLastRecordByRound } from "../../models/record";
+import { isDealerContinue } from "../record/record";
 
 export {
     createRound,
     getLastRound
 };
 
-const currentRound = {
+export const currentRound = {
     uid: '',
     players: ['', '', '', ''],
-    circle: '',
-    dealer: '',
+    circle: 0,
+    dealer: 0,
     dealerCount: 0,
 };
 
@@ -45,12 +46,27 @@ const createRound = async (req: Request, res: Response, next: NextFunction) => {
 
 const getLastRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const round = await findLastRound();
         if (currentRound.uid) {
             console.log('yes');
-            const record = await findLastRecordByRound(currentRound.uid);
-            //isDealerContinue
+            const currentRecord = await findLastRecordByRound(currentRound.uid);
+            if (currentRecord) {
+                if (await isDealerContinue(currentRecord)) {
+                    currentRound.dealerCount = currentRecord.dealerCount + 1;
+                } else {
+                    if (currentRecord.circle === 3) {
+                        currentRound.circle = currentRecord.circle + 1;
+                        if (currentRound.circle > 3) {
+                            currentRound.uid = null;
+                        };
+                        currentRound.dealer = 0;
+                    } else {
+                        currentRound.dealer = (+currentRecord.dealer + 1);
+                        currentRound.dealerCount = 0;
+                    };
+                };
+            };
         } else {
-            const round = await findLastRound();
             console.log('no');
             currentRound.uid = round.uid;
             currentRound.players = [
@@ -59,24 +75,15 @@ const getLastRound = async (req: Request, res: Response, next: NextFunction) => 
                 round.west.name,
                 round.north.name
             ];
-            currentRound.circle = 'east';
-            currentRound.dealer = 'east';
+            currentRound.circle = 0;
+            currentRound.dealer = 0;
             currentRound.dealerCount = 0;
         };
-        // const result = {
-        //     uid: round.uid,
-        //     player: [
-        //         round.east.name,
-        //         round.south.name,
-        //         round.west.name,
-        //         round.north.name
-        //     ],
-        //     circle: record ? record.circle : 'east',
-        //     wind: record ? record.dealer : 'east'
-        // };
+        console.log(currentRound);
         success(res, currentRound);
     } catch (err) {
         next(err);
         fail(res, err);
     };
 };
+

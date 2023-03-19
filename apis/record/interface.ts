@@ -5,11 +5,11 @@ export {
 };
 
 interface IRecord {
-    winner?: WindEnum;
-    loser?: WindEnum[] | WindEnum;
-    dealer: WindEnum;
+    winner?: number;
+    loser?: number[];
+    dealer: number;
     dealerCount: number;
-    circle: WindEnum;
+    circle: number;
     endType: EndEnum;
     point?: number;
 };
