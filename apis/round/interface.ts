@@ -1,4 +1,4 @@
-import { DeskType } from "../../entities/round";
+import { DeskType } from "../../databases/entities/round";
 
 export {
     IRound

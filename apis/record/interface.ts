@@ -1,4 +1,4 @@
-import { WindEnum, EndEnum } from "../../entities/record"
+import { WindEnum, EndEnum } from "../../databases/entities/record"
 
 export {
     IRecord

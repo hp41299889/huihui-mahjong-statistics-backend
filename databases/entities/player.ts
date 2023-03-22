@@ -14,7 +14,7 @@ export class Player {
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     name: string;
 
     @OneToMany(() => Round, round => round.east)

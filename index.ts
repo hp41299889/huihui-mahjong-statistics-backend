@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import * as routes from './apis';
-import * as services from './services';
 import { appConfig } from './configs/config';
 
 const app = express();
@@ -15,7 +14,7 @@ const routeInit = () => {
 };
 
 const serviceInit = () => {
-    services.postgresInit();
+    // services.postgresInit();
 };
 
 const appInit = async () => {

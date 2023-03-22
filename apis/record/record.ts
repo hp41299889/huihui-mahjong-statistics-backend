@@ -2,12 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import { join } from 'lodash';
 
 import { success, fail } from "../../utils/http";
-import { Record } from "../../entities";
-import { findAllRecords, saveRecord } from "../../models/record";
+import { Record } from "../../databases/entities/index";
+import { findAllRecords, saveRecord } from "../../databases/models/record";
 import { IRecord } from "./interface";
-import { findOneRoundByUid } from "../../models/round";
+import { findOneRoundByUid } from "../../databases/models/round";
 import { currentRound } from "../round/round";
-import { findLastRecordByRound } from "../../models/record";
+import { findLastRecordByRound } from "../../databases/models/record";
 
 export {
     createRecord,

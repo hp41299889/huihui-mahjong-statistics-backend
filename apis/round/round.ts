@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 
-import { Round } from "../../entities";
+import { Round } from "../../databases/entities/index";
 import { success, fail } from "../../utils/http";
 import { IRound } from "./interface";
-import { findPlayerById, findPlayerByName } from "../../models/player";
-import { findLastRound, saveRound } from "../../models/round";
-import { findLastRecordByRound } from "../../models/record";
+import { findPlayerById, findPlayerByName } from "../../databases/models/player";
+import { findLastRound, saveRound } from "../../databases/models/round";
+import { findLastRecordByRound } from "../../databases/models/record";
 import { isDealerContinue } from "../record/record";
 
 export {

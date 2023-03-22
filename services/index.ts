@@ -1,1 +1,0 @@
-export { postgres, postgresInit } from './databases/postgres';

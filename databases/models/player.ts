@@ -1,5 +1,5 @@
-import { postgres } from "../services";
-import { Player } from "../entities";
+import postgres from "../postgres";
+import { Player } from "../entities/index";
 
 export {
     findPlayerById,

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
 import { success, fail } from "../../utils/http";
-import { postgres } from "../../services";
-import { Player } from "../../entities";
+import postgres from "../../databases/postgres";
+import { Player } from "../../databases/entities/index";
 
 export {
     createPlayer,

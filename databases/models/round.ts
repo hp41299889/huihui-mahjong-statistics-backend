@@ -1,5 +1,5 @@
-import { postgres } from "../services";
-import { Round } from "../entities";
+import postgres from "../postgres";
+import { Round } from "../entities/index";
 
 export {
     findAllRounds,
