@@ -16,18 +16,14 @@ const Postgres = new DataSource({
         entity.Record,
         entity.Round
     ],
-    migrations: ['migrations/*.ts'],
+    migrations: ['./migrations/*.ts'],
     migrationsTableName: 'migrations',
+    synchronize: true
 });
 
 Postgres.initialize()
     .then(() => {
         console.log('postgres connect success');
-    })
-    .catch((err) => {
-        console.log(err);
-        console.log('postgres connect fail');
     });
-
 
 export default Postgres;
