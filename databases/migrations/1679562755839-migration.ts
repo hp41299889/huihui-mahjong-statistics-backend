@@ -1,10 +1,12 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class migration1679479055457 implements MigrationInterface {
-    name = 'migration1679479055457'
+export class migration1679562755839 implements MigrationInterface {
+    name = 'migration1679562755839'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE TYPE "public"."record_endtype_enum" AS ENUM('winning', 'self-drawn', 'draw', 'fake')`);
         await queryRunner.query(`CREATE TABLE "record" ("uid" uuid NOT NULL DEFAULT uuid_generate_v4(), "winner" smallint, "loser" character varying, "dealer" smallint NOT NULL, "dealerCount" smallint NOT NULL, "circle" smallint NOT NULL, "endType" "public"."record_endtype_enum" NOT NULL, "point" smallint, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "roundUid" uuid, CONSTRAINT "PK_8de44784d54d4397e7cce8fcd37" PRIMARY KEY ("uid"))`);
+        await queryRunner.query(`CREATE TYPE "public"."round_desktype_enum" AS ENUM('auto', 'manual')`);
         await queryRunner.query(`CREATE TABLE "round" ("uid" uuid NOT NULL DEFAULT uuid_generate_v4(), "deskType" "public"."round_desktype_enum" NOT NULL DEFAULT 'auto', "base" smallint NOT NULL, "point" smallint NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "eastId" integer, "southId" integer, "westId" integer, "northId" integer, CONSTRAINT "PK_3eb2356a4d7d48675d66bd91363" PRIMARY KEY ("uid"))`);
         await queryRunner.query(`CREATE TABLE "player" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_7baa5220210c74f8db27c06f8b4" UNIQUE ("name"), CONSTRAINT "PK_65edadc946a7faf4b638d5e8885" PRIMARY KEY ("id"))`);
         await queryRunner.query(`ALTER TABLE "record" ADD CONSTRAINT "FK_9fef4d68af13d466d9b3537ef85" FOREIGN KEY ("roundUid") REFERENCES "round"("uid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
@@ -22,7 +24,9 @@ export class migration1679479055457 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "record" DROP CONSTRAINT "FK_9fef4d68af13d466d9b3537ef85"`);
         await queryRunner.query(`DROP TABLE "player"`);
         await queryRunner.query(`DROP TABLE "round"`);
+        await queryRunner.query(`DROP TYPE "public"."round_desktype_enum"`);
         await queryRunner.query(`DROP TABLE "record"`);
+        await queryRunner.query(`DROP TYPE "public"."record_endtype_enum"`);
     }
 
 }

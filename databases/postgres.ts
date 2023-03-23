@@ -12,13 +12,13 @@ const Postgres = new DataSource({
     password: postgresConfig.password,
     database: postgresConfig.database,
     entities: [
-        entity.Player,
-        entity.Record,
-        entity.Round
+        // entity.Player,
+        // entity.Record,
+        // entity.Round
     ],
-    migrations: ['./migrations/*.ts'],
+    migrations: ['./databases/migrations/*.ts'],
     migrationsTableName: 'migrations',
-    synchronize: true
+    // synchronize: true
 });
 
 Postgres.initialize()
