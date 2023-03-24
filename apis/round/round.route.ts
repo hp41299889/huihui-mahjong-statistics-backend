@@ -1,17 +1,18 @@
 import { Router } from "express";
 
-import {
-    createRound,
-    getLastRound
-} from './round';
+import round from './round';
 
+const {
+    postOne,
+    getLast
+} = round;
 
 const router = Router();
 
 router.route('/')
-    .get(getLastRound);
+    .get(getLast);
 
 router.route('/')
-    .post(createRound);
+    .post(postOne);
 
 export default router;

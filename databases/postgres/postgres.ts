@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm";
 import 'dotenv/config';
 
-import { postgresConfig } from '../configs/config';
+import { postgresConfig } from '../../configs/config';
 import * as entity from './entities/index';
 
 const Postgres = new DataSource({

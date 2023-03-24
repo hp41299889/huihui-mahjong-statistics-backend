@@ -1,17 +1,17 @@
 import { Router } from "express";
 
-import {
-    createRecord,
-    getRecords
-} from './record';
+import record from './record';
 
+const {
+    postOne
+} = record;
 
 const router = Router();
 
 router.route('/')
-    .get(getRecords);
+// .get(getRecords);
 
 router.route('/:roundUid')
-    .post(createRecord)
+    .post(postOne)
 
 export default router;

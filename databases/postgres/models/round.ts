@@ -1,16 +1,17 @@
-import postgres from "../postgres";
-import { Round } from "../entities/index";
-
-export {
-    findAllRounds,
-    findOneRoundByUid,
-    findLastRound,
-    saveRound
-};
+import postgres from '@postgres/postgres';
+import { Round } from '@postgres/entities';
 
 const repo = postgres.getRepository(Round);
 
-const findAllRounds = async () => {
+const createOne = async (round: Round) => {
+    try {
+        return await repo.save(round);
+    } catch (err) {
+        throw err;
+    };
+};
+
+const readAll = async () => {
     try {
         return repo.find();
     } catch (err) {
@@ -19,7 +20,7 @@ const findAllRounds = async () => {
 };
 
 
-const findOneRoundByUid = async (uid: string) => {
+const readOneByUid = async (uid: string) => {
     try {
         return repo.findOneBy({ uid: uid });
     } catch (err) {
@@ -27,7 +28,7 @@ const findOneRoundByUid = async (uid: string) => {
     };
 };
 
-const findLastRound = async () => {
+const readLast = async () => {
     try {
         return repo.findOne({
             where: {
@@ -42,10 +43,9 @@ const findLastRound = async () => {
     };
 };
 
-const saveRound = async (round: Round) => {
-    try {
-        return await repo.save(round);
-    } catch (err) {
-        throw err;
-    };
+export default {
+    createOne,
+    readAll,
+    readLast,
+    readOneByUid
 };

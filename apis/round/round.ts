@@ -1,17 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 
-import { Round } from "../../databases/entities/index";
-import { success, fail } from "../../utils/http";
+import { success, fail } from '@http';
 import { IRound } from "./interface";
-import { findPlayerById, findPlayerByName } from "../../databases/models/player";
-import { findLastRound, saveRound } from "../../databases/models/round";
-import { findLastRecordByRound } from "../../databases/models/record";
+import { Round } from '@postgres/entities';
+import { playerModel, recordModel, roundModel } from '@postgres/models';
 import { isDealerContinue } from "../record/record";
-
-export {
-    createRound,
-    getLastRound
-};
 
 export const currentRound = {
     uid: '',
@@ -21,14 +14,14 @@ export const currentRound = {
     dealerCount: 0,
 };
 
-const createRound = async (req: Request, res: Response, next: NextFunction) => {
+const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { deskType, base, point, eastName, southName, westName, northName }: IRound = req.body;
         const round = new Round();
-        const east = await findPlayerByName(eastName);
-        const south = await findPlayerByName(southName);
-        const west = await findPlayerByName(westName);
-        const north = await findPlayerByName(northName);
+        const east = await playerModel.readOneByName(eastName);
+        const south = await playerModel.readOneByName(southName);
+        const west = await playerModel.readOneByName(westName);
+        const north = await playerModel.readOneByName(northName);
         round.deskType = deskType;
         round.base = base;
         round.point = point;
@@ -36,7 +29,7 @@ const createRound = async (req: Request, res: Response, next: NextFunction) => {
         round.south = south;
         round.west = west;
         round.north = north;
-        const result = await saveRound(round);
+        const result = await roundModel.createOne(round);
         success(res, result);
     } catch (err) {
         next(err);
@@ -44,12 +37,12 @@ const createRound = async (req: Request, res: Response, next: NextFunction) => {
     };
 };
 
-const getLastRound = async (req: Request, res: Response, next: NextFunction) => {
+const getLast = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const round = await findLastRound();
+        const round = await roundModel.readLast();
         if (currentRound.uid) {
             console.log('yes');
-            const currentRecord = await findLastRecordByRound(currentRound.uid);
+            const currentRecord = await recordModel.readLastByRoundUid(currentRound.uid);
             if (currentRecord) {
                 if (await isDealerContinue(currentRecord)) {
                     currentRound.dealerCount = currentRecord.dealerCount + 1;
@@ -87,3 +80,7 @@ const getLastRound = async (req: Request, res: Response, next: NextFunction) => 
     };
 };
 
+export default {
+    postOne,
+    getLast
+};

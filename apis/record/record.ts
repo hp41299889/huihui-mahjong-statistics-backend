@@ -1,18 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { join } from 'lodash';
 
-import { success, fail } from "../../utils/http";
-import { Record } from "../../databases/entities/index";
-import { findAllRecords, saveRecord } from "../../databases/models/record";
+import { success, fail } from '@utils/http';
+import { roundModel, recordModel } from '@postgres/models';
+import { Record } from '@postgres/entities';
 import { IRecord } from "./interface";
-import { findOneRoundByUid } from "../../databases/models/round";
 import { currentRound } from "../round/round";
-import { findLastRecordByRound } from "../../databases/models/record";
-
-export {
-    createRecord,
-    getRecords
-};
 
 enum EEndType {
     WINNING = 'winning',
@@ -21,15 +14,15 @@ enum EEndType {
     FAKE = 'fake'
 };
 
-const createRecord = async (req: Request, res: Response, next: NextFunction) => {
+const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { roundUid } = req.params;
-        const round = await findOneRoundByUid(roundUid);
+        const round = await roundModel.readOneByUid(roundUid);
         if (!round) {
             success(res, 'round not found');
         } else {
             const { winner, loser, dealer, dealerCount, circle, endType, point }: IRecord = req.body;
-            const currentRecord = await findLastRecordByRound(currentRound.uid);
+            const currentRecord = await recordModel.readLastByRoundUid(currentRound.uid);
             if (currentRecord) {
                 if (await isDealerContinue(currentRecord)) {
                     currentRound.dealerCount = currentRecord.dealerCount + 1;
@@ -59,9 +52,7 @@ const createRecord = async (req: Request, res: Response, next: NextFunction) => 
             record.circle = circle;
             record.endType = endType;
             record.point = point;
-            const result = await saveRecord(record);
-            console.log(currentRecord);
-
+            const result = await recordModel.createOne(record);
             success(res, result);
         };
     } catch (err) {
@@ -70,14 +61,14 @@ const createRecord = async (req: Request, res: Response, next: NextFunction) => 
     };
 };
 
-const getRecords = async (req: Request, res: Response) => {
-    try {
-        const result = await findAllRecords();
-        success(res, result)
-    } catch (err) {
-        throw err;
-    };
-};
+// const getAll = async (req: Request, res: Response) => {
+//     try {
+//         const result = await findAllRecords();
+//         success(res, result)
+//     } catch (err) {
+//         throw err;
+//     };
+// };
 
 export const isDealerContinue = async (record: any) => {
     if (record.winner === record.dealer) {
@@ -90,4 +81,9 @@ export const isDealerContinue = async (record: any) => {
         return true;
     }
     return false;
+};
+
+export default {
+    postOne,
+    // getAll
 };

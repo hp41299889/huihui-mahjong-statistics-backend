@@ -1,15 +1,20 @@
-import { Router } from "express";
+import { Router } from 'express';
 
-import {
-    createPlayer,
-    getPlayers
-} from './player';
+import player from './player';
 
+const {
+    postOne,
+    getAll,
+    getOneByName
+} = player;
 
 const router = Router();
 
 router.route('/')
-    .post(createPlayer)
-    .get(getPlayers);
+    .post(postOne)
+    .get(getAll);
+
+router.route('/:name')
+    .get(getOneByName);
 
 export default router;

@@ -1,20 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
-import { success, fail } from "../../utils/http";
-import postgres from "../../databases/postgres";
-import { Player } from "../../databases/entities/index";
+import { success, fail } from '@utils/http';
+import { playerModel } from '@postgres/models';
 
-export {
-    createPlayer,
-    getPlayers
-};
-
-const repo = postgres.getRepository(Player);
-
-const createPlayer = async (req: Request, res: Response, next: NextFunction) => {
+const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const player = repo.create(req.body);
-        const result = await repo.save(player);
+        const { name }: { name: string } = req.body;
+        const result = await playerModel.createOne(name);
         success(res, result);
     } catch (err) {
         fail(res, err);
@@ -22,12 +14,29 @@ const createPlayer = async (req: Request, res: Response, next: NextFunction) => 
     };
 };
 
-const getPlayers = async (req: Request, res: Response, next: NextFunction) => {
+const getAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await repo.find();
+        const result = await playerModel.readAll();
         success(res, result);
     } catch (err) {
         fail(res, err);
         next(err);
     };
+};
+
+const getOneByName = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { name }: { name: string } = req.body;
+        const result = await playerModel.readOneByName(name);
+        success(res, result);
+    } catch (err) {
+        fail(res, err);
+        next(err);
+    };
+};
+
+export default {
+    postOne,
+    getAll,
+    getOneByName
 };
