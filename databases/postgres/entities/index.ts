@@ -1,11 +1,10 @@
-// export { Player } from './player';
-// export { Record } from './record';
-// export { Round } from './round';
 import Player, { IPlayer } from './player';
-import Record, { IRecord, EEndType } from './record';
+import Record, { IRecord, EEndType, EWind } from './record';
 import Round, { IRound, EDeskType } from './round';
+import RecordLoser, { IRecordLoser } from './recordLoser';
 export {
     Player, IPlayer,
-    Record, IRecord, EEndType,
-    Round, IRound, EDeskType
+    Record, IRecord, EEndType, EWind,
+    Round, IRound, EDeskType,
+    RecordLoser, IRecordLoser
 };

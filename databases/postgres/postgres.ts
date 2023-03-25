@@ -1,8 +1,7 @@
 import { DataSource } from "typeorm";
-import 'dotenv/config';
 
-import { postgresConfig } from '../../configs/config';
-import * as entity from './entities/index';
+import { postgresConfig } from '@configs/config';
+import { Player, Record, RecordLoser, Round } from './entities/index';
 
 const Postgres = new DataSource({
     type: 'postgres',
@@ -11,10 +10,15 @@ const Postgres = new DataSource({
     username: postgresConfig.username,
     password: postgresConfig.password,
     database: postgresConfig.database,
-    entities: ['./databases/entities/*.ts'],
-    migrations: ['./databases/migrations/*.ts'],
+    entities: [
+        Player,
+        Record,
+        Round,
+        RecordLoser
+    ],
+    migrations: [],
     migrationsTableName: 'migrations',
-    // synchronize: true
+    synchronize: true
 });
 
 Postgres.initialize()

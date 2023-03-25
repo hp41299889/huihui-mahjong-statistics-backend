@@ -1,82 +1,7 @@
-// import {
-//     Entity,
-//     ManyToOne,
-//     Column,
-//     PrimaryGeneratedColumn,
-//     CreateDateColumn,
-//     JoinColumn,
-// } from 'typeorm';
-
-// import { Round } from './round';
-
-// export {
-//     WindEnum,
-//     EndEnum,
-//     Record
-// };
-
-// enum WindEnum {
-//     EAST = 'east',
-//     SOUTH = 'south',
-//     WEST = 'west',
-//     NORTH = 'north'
-// };
-
-// enum EndEnum {
-//     WINNING = 'winning',
-//     SELF_DRAWN = 'self-drawn',
-//     DRAW = 'draw',
-//     FAKE = 'fake'
-// };
-
-// @Entity()
-// class Record {
-//     @PrimaryGeneratedColumn('uuid')
-//     uid: string;
-
-//     @Column({
-//         nullable: true, type: 'smallint'
-//     })
-//     winner: number | null;
-
-//     @Column({ nullable: true })
-//     loser: string | null;
-
-//     @Column({
-//         type: 'smallint'
-//     })
-//     dealer: number;
-
-//     @Column({ type: 'smallint' })
-//     dealerCount: number;
-
-//     @Column({
-//         type: 'smallint'
-//     })
-//     circle: number;
-
-//     @Column({
-//         type: 'enum',
-//         enum: EndEnum
-//     })
-//     endType: EndEnum
-
-//     @Column({
-//         type: 'smallint',
-//         nullable: true
-//     })
-//     point: number | null;
-
-//     @ManyToOne(() => Round, round => round.records)
-//     round: Round;
-
-//     @CreateDateColumn({ type: 'timestamp' })
-//     createdAt: Date;
-// };
-
 import { EntitySchema } from 'typeorm';
 import { IPlayer } from './player';
 import { IRound } from './round';
+import { IRecordLoser } from './recordLoser';
 
 enum EEndType {
     WINNING = 'winning',
@@ -95,9 +20,9 @@ enum EWind {
 interface IRecord {
     uid: string;
     winner: IPlayer;
-    loser: IPlayer[];
-    circle: EWind;
-    dealer: EWind;
+    loser: IRecordLoser[];
+    circle: number;
+    dealer: number;
     dealerCount: number;
     endType: EEndType;
     point: number;
@@ -111,16 +36,14 @@ const Record = new EntitySchema<IRecord>({
     columns: {
         uid: {
             primary: true,
-            type: String,
+            type: 'uuid',
             generated: 'uuid'
         },
         circle: {
-            type: 'enum',
-            enum: EWind
+            type: Number,
         },
         dealer: {
-            type: 'enum',
-            enum: EWind
+            type: Number,
         },
         dealerCount: {
             type: Number
@@ -146,24 +69,18 @@ const Record = new EntitySchema<IRecord>({
     relations: {
         winner: {
             target: 'player',
-            type: 'one-to-one',
-            joinColumn: { name: 'playerId' },
-            inverseSide: 'records'
+            type: 'many-to-one',
         },
         loser: {
-            target: 'player',
-            type: 'one-to-one',
-            joinColumn: { name: 'playerId' },
-            inverseSide: 'records'
+            target: 'record_loser',
+            type: 'one-to-many',
         },
         round: {
             target: 'round',
             type: 'many-to-one',
-            joinColumn: { name: 'roundUid' },
-            inverseSide: 'records',
         }
     }
 });
 
-export { IRecord, EEndType };
+export { IRecord, EEndType, EWind };
 export default Record;

@@ -1,5 +1,5 @@
 import postgres from '@postgres/postgres';
-import { IPlayer, Player } from '@postgres/entities';
+import { Player } from '@postgres/entities';
 
 interface ICreateOnePlayerDto {
     name: string;

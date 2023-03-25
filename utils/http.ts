@@ -1,11 +1,6 @@
 import { Response } from "express";
 
-import { loggerFactory } from "./logger";
-
-export {
-    success,
-    fail
-};
+import loggerFactory from "./logger";
 
 const logger = loggerFactory('HttpHandler');
 
@@ -23,4 +18,9 @@ const fail = (res: Response, error: any) => {
         status: 'fail',
         data: error
     });
+};
+
+export default {
+    success,
+    fail
 };

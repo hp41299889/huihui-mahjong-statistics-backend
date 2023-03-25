@@ -2,7 +2,7 @@ import { createLogger, format, transports } from 'winston';
 
 const { printf, timestamp, combine, label, colorize, metadata } = format;
 
-export const loggerFactory = (customLabel: string) => {
+const loggerFactory = (customLabel: string) => {
     const formatter = printf(({ level, message, label, timestamp }) => {
         if (typeof (message) == 'object') {
             message = JSON.stringify(message, null, 3);
@@ -22,3 +22,5 @@ export const loggerFactory = (customLabel: string) => {
     })
     return logger;
 };
+
+export default loggerFactory;

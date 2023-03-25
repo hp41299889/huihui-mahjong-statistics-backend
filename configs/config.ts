@@ -2,11 +2,6 @@ import 'dotenv/config';
 
 const { env } = process;
 
-export {
-    appConfig,
-    postgresConfig
-};
-
 const appConfig = {
     port: env.APP_PORT
 };
@@ -17,4 +12,9 @@ const postgresConfig = {
     host: env.HUIHUI_POSTGRES_HOST,
     port: env.HUIHUI_POSTGRES_PORT || 5432,
     database: env.HUIHUI_POSTGRES_DB
+};
+
+export {
+    appConfig,
+    postgresConfig
 };

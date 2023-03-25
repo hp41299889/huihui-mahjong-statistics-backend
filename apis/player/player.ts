@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { success, fail } from '@utils/http';
+import http from '@utils/http';
 import { playerModel, ICreateOnePlayerDto } from '@postgres/models';
+
+const { success, fail } = http;
 
 const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {

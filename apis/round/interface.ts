@@ -1,11 +1,11 @@
-import { DeskType } from "../../databases/entities/round";
+import { EDeskType } from "@postgres/entities/index";
 
 export {
     IRound
 };
 
 interface IRound {
-    deskType: DeskType;
+    deskType: EDeskType;
     base: number;
     point: number;
     eastName: string;

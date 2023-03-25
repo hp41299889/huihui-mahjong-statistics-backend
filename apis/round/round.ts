@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 
-import { success, fail } from '@utils/http';
+import http from '@utils/http';
 import { IRound } from "./interface";
 import { EDeskType, Round } from '@postgres/entities';
 import { playerModel, recordModel, roundModel, ICreateOneRoundDto } from '@postgres/models';
-import { isDealerContinue } from "../record/record";
+// import { isDealerContinue } from "../record/record";
+const { success, fail } = http;
 
 export const currentRound = {
     uid: '',
@@ -53,20 +54,20 @@ const getLast = async (req: Request, res: Response, next: NextFunction) => {
             console.log('yes');
             const currentRecord = await recordModel.readLastByRoundUid(currentRound.uid);
             if (currentRecord) {
-                if (await isDealerContinue(currentRecord)) {
-                    currentRound.dealerCount = currentRecord.dealerCount + 1;
-                } else {
-                    if (currentRecord.circle === 3) {
-                        currentRound.circle = currentRecord.circle + 1;
-                        if (currentRound.circle > 3) {
-                            currentRound.uid = null;
-                        };
-                        currentRound.dealer = 0;
-                    } else {
-                        currentRound.dealer = (+currentRecord.dealer + 1);
-                        currentRound.dealerCount = 0;
-                    };
-                };
+                // if (await isDealerContinue(currentRecord)) {
+                //     currentRound.dealerCount = currentRecord.dealerCount + 1;
+                // } else {
+                //     if (currentRecord.circle === 3) {
+                //         currentRound.circle = currentRecord.circle + 1;
+                //         if (currentRound.circle > 3) {
+                //             currentRound.uid = null;
+                //         };
+                //         currentRound.dealer = 0;
+                //     } else {
+                //         currentRound.dealer = (+currentRecord.dealer + 1);
+                //         currentRound.dealerCount = 0;
+                //     };
+                // };
             };
         } else {
             console.log('no');

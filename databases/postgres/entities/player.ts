@@ -1,48 +1,14 @@
-// import {
-//     Entity,
-//     Column,
-//     PrimaryGeneratedColumn,
-//     CreateDateColumn,
-//     UpdateDateColumn,
-//     OneToMany
-// } from 'typeorm';
-
-// import { Round } from './round';
-
-// @Entity()
-// export class Player {
-//     @PrimaryGeneratedColumn('increment')
-//     id: number;
-
-//     @Column({ unique: true })
-//     name: string;
-
-//     @OneToMany(() => Round, round => round.east)
-//     east_round: Round[];
-
-//     @OneToMany(() => Round, round => round.south)
-//     south_round: Round[];
-
-//     @OneToMany(() => Round, round => round.west)
-//     west_round: Round[];
-
-//     @OneToMany(() => Round, round => round.north)
-//     north_round: Round[];
-
-//     @CreateDateColumn({ type: 'timestamp' })
-//     createdAt: Date;
-
-//     @UpdateDateColumn({ type: 'timestamp' })
-//     updatedAt: Date;
-// };
 import { EntitySchema, EntitySchemaColumnOptions } from 'typeorm';
 
 import { IRound } from './round';
+import { IRecordLoser } from './recordLoser';
 
 interface IPlayer {
     id: number;
     name: string;
     rounds: IRound[];
+    winners: IPlayer;
+    losers: IRecordLoser[];
     createdAt: Date;
     updatedAt: Date;
 };
@@ -74,8 +40,14 @@ const Player = new EntitySchema<IPlayer>({
         rounds: {
             target: 'round',
             type: 'one-to-many',
-            inverseSide: 'player',
-            cascade: true,
+        },
+        winners: {
+            type: 'one-to-many',
+            target: 'record',
+        },
+        losers: {
+            type: 'one-to-many',
+            target: 'record_loser'
         }
     }
 });
