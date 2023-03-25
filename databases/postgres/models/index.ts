@@ -1,9 +1,9 @@
-import playerModel from './player';
+import playerModel, { ICreateOnePlayerDto } from './player';
 import recordModel from './record';
-import roundModel from './round';
+import roundModel, { ICreateOneRoundDto } from './round';
 
 export {
-    playerModel,
+    playerModel, ICreateOnePlayerDto,
     recordModel,
-    roundModel
+    roundModel, ICreateOneRoundDto
 };

@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { success, fail } from '@utils/http';
-import { playerModel } from '@postgres/models';
+import { playerModel, ICreateOnePlayerDto } from '@postgres/models';
 
 const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name }: { name: string } = req.body;
-        const result = await playerModel.createOne(name);
+        const { body }: { body: ICreateOnePlayerDto } = req;
+        const result = await playerModel.createOne(body);
         success(res, result);
     } catch (err) {
         fail(res, err);
@@ -26,8 +26,8 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 
 const getOneByName = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name }: { name: string } = req.body;
-        const result = await playerModel.readOneByName(name);
+        const { playerName } = req.params;
+        const result = await playerModel.readOneByName(playerName);
         success(res, result);
     } catch (err) {
         fail(res, err);
@@ -38,5 +38,5 @@ const getOneByName = async (req: Request, res: Response, next: NextFunction) => 
 export default {
     postOne,
     getAll,
-    getOneByName
+    getOneByName,
 };

@@ -66,7 +66,7 @@ enum EDeskType {
 };
 
 interface IRound {
-    id: string;
+    uid: string;
     deskType: EDeskType;
     base: number;
     point: number;
@@ -82,7 +82,7 @@ interface IRound {
 const Round = new EntitySchema<IRound>({
     name: 'round',
     columns: {
-        id: {
+        uid: {
             primary: true,
             type: String,
             generated: 'uuid'

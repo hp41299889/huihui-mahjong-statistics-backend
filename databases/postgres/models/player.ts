@@ -1,13 +1,15 @@
 import postgres from '@postgres/postgres';
-import { Player } from '@postgres/entities';
+import { IPlayer, Player } from '@postgres/entities';
+
+interface ICreateOnePlayerDto {
+    name: string;
+};
 
 const repo = postgres.getRepository(Player);
 
-const createOne = (name: string) => {
+const createOne = (dto: ICreateOnePlayerDto) => {
     try {
-        const player = new Player();
-        player.name = name;
-        return repo.save(player);
+        return repo.save(dto);
     } catch (err) {
         throw err;
     };
@@ -21,14 +23,17 @@ const readAll = () => {
     };
 };
 
-const readOneByName = async (playerName: string): Promise<Player | null> => {
+const readOneByName = async (playerName: string) => {
     try {
-        return await repo.findOneBy({ name: playerName });
+        return await repo.findOneBy({
+            name: playerName
+        });
     } catch (err) {
         throw err;
     };
 };
 
+export { ICreateOnePlayerDto };
 export default {
     createOne,
     readAll,

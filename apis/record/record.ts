@@ -4,15 +4,7 @@ import { join } from 'lodash';
 import { success, fail } from '@utils/http';
 import { roundModel, recordModel } from '@postgres/models';
 import { Record } from '@postgres/entities';
-import { IRecord } from "./interface";
 import { currentRound } from "../round/round";
-
-enum EEndType {
-    WINNING = 'winning',
-    SELF_DRAWN = 'self-drawn',
-    DRAW = 'draw',
-    FAKE = 'fake'
-};
 
 const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {

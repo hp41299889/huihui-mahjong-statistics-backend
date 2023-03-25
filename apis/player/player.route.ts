@@ -14,7 +14,7 @@ router.route('/')
     .post(postOne)
     .get(getAll);
 
-router.route('/:name')
+router.route('/:playerName')
     .get(getOneByName);
 
 export default router;

@@ -3,6 +3,10 @@ import { Record } from '@postgres/entities';
 
 const repo = postgres.getRepository(Record);
 
+interface ICreateOneRecordDto {
+
+};
+
 const createOne = async (record: Record) => {
     try {
         return await repo.save(record);

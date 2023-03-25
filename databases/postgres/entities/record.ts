@@ -75,6 +75,7 @@
 // };
 
 import { EntitySchema } from 'typeorm';
+import { IPlayer } from './player';
 import { IRound } from './round';
 
 enum EEndType {
@@ -84,12 +85,19 @@ enum EEndType {
     FAKE = 'fake'
 };
 
+enum EWind {
+    EAST = 'east',
+    SOUTH = 'south',
+    WEST = 'west',
+    NORTH = 'north',
+};
+
 interface IRecord {
     uid: string;
-    winner: number;
-    loser: number;
-    circle: number;
-    dealer: number;
+    winner: IPlayer;
+    loser: IPlayer[];
+    circle: EWind;
+    dealer: EWind;
     dealerCount: number;
     endType: EEndType;
     point: number;
@@ -106,17 +114,13 @@ const Record = new EntitySchema<IRecord>({
             type: String,
             generated: 'uuid'
         },
-        winner: {
-            type: Number
-        },
-        loser: {
-            type: Number
-        },
         circle: {
-            type: Number
+            type: 'enum',
+            enum: EWind
         },
         dealer: {
-            type: Number
+            type: 'enum',
+            enum: EWind
         },
         dealerCount: {
             type: Number
@@ -140,6 +144,18 @@ const Record = new EntitySchema<IRecord>({
         }
     },
     relations: {
+        winner: {
+            target: 'player',
+            type: 'one-to-one',
+            joinColumn: { name: 'playerId' },
+            inverseSide: 'records'
+        },
+        loser: {
+            target: 'player',
+            type: 'one-to-one',
+            joinColumn: { name: 'playerId' },
+            inverseSide: 'records'
+        },
         round: {
             target: 'round',
             type: 'many-to-one',

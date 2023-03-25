@@ -11,11 +11,7 @@ const Postgres = new DataSource({
     username: postgresConfig.username,
     password: postgresConfig.password,
     database: postgresConfig.database,
-    entities: [
-        // entity.Player,
-        // entity.Record,
-        // entity.Round
-    ],
+    entities: ['./databases/entities/*.ts'],
     migrations: ['./databases/migrations/*.ts'],
     migrationsTableName: 'migrations',
     // synchronize: true

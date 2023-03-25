@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 
-import { success, fail } from '@http';
+import { success, fail } from '@utils/http';
 import { IRound } from "./interface";
-import { Round } from '@postgres/entities';
-import { playerModel, recordModel, roundModel } from '@postgres/models';
+import { EDeskType, Round } from '@postgres/entities';
+import { playerModel, recordModel, roundModel, ICreateOneRoundDto } from '@postgres/models';
 import { isDealerContinue } from "../record/record";
 
 export const currentRound = {
@@ -14,22 +14,31 @@ export const currentRound = {
     dealerCount: 0,
 };
 
+interface IPostOne {
+    deskType: EDeskType;
+    base: number;
+    point: number;
+    eastName: string;
+    southName: string;
+    westName: string;
+    northName: string;
+}
+
 const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { deskType, base, point, eastName, southName, westName, northName }: IRound = req.body;
-        const round = new Round();
-        const east = await playerModel.readOneByName(eastName);
-        const south = await playerModel.readOneByName(southName);
-        const west = await playerModel.readOneByName(westName);
-        const north = await playerModel.readOneByName(northName);
-        round.deskType = deskType;
-        round.base = base;
-        round.point = point;
-        round.east = east;
-        round.south = south;
-        round.west = west;
-        round.north = north;
-        const result = await roundModel.createOne(round);
+        const { body }: { body: IPostOne } = req;
+        const east = await playerModel.readOneByName(body.eastName);
+        const south = await playerModel.readOneByName(body.southName);
+        const west = await playerModel.readOneByName(body.westName);
+        const north = await playerModel.readOneByName(body.northName);
+        const dto: ICreateOneRoundDto = {
+            ...body,
+            east: east,
+            south: south,
+            west: west,
+            north: north
+        };
+        const result = await roundModel.createOne(dto);
         success(res, result);
     } catch (err) {
         next(err);

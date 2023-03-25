@@ -1,11 +1,21 @@
 import postgres from '@postgres/postgres';
-import { Round } from '@postgres/entities';
+import { EDeskType, IPlayer, Round } from '@postgres/entities';
+
+interface ICreateOneRoundDto {
+    deskType: EDeskType;
+    base: number;
+    point: number;
+    east: IPlayer;
+    south: IPlayer;
+    west: IPlayer;
+    north: IPlayer;
+};
 
 const repo = postgres.getRepository(Round);
 
-const createOne = async (round: Round) => {
+const createOne = async (dto: ICreateOneRoundDto) => {
     try {
-        return await repo.save(round);
+        return await repo.save(dto);
     } catch (err) {
         throw err;
     };
@@ -43,6 +53,7 @@ const readLast = async () => {
     };
 };
 
+export { ICreateOneRoundDto };
 export default {
     createOne,
     readAll,
