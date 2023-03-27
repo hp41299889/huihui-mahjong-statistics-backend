@@ -10,7 +10,7 @@ interface IPlayer {
     winners: IPlayer;
     losers: IRecordLoser[];
     createdAt: Date;
-    updatedAt: Date;
+    // updatedAt: Date;
 };
 
 const Player = new EntitySchema<IPlayer>({
@@ -30,24 +30,26 @@ const Player = new EntitySchema<IPlayer>({
             type: 'timestamp',
             createDate: true
         },
-        updatedAt: {
-            name: 'updated_at',
-            type: 'timestamp',
-            updateDate: true
-        }
+        // updatedAt: {
+        //     name: 'updated_at',
+        //     type: 'timestamp',
+        //     updateDate: true
+        // }
     },
     relations: {
         rounds: {
             target: 'round',
             type: 'one-to-many',
+            joinColumn: { name: 'roundUid' }
         },
         winners: {
             type: 'one-to-many',
             target: 'record',
+            joinColumn: { name: 'playerId' }
         },
         losers: {
             type: 'one-to-many',
-            target: 'record_loser'
+            target: 'record_loser',
         }
     }
 });

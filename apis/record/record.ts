@@ -3,17 +3,17 @@ import { join } from 'lodash';
 
 import http from '@utils/http';
 import loggerFactory from "@utils/logger";
-import { roundModel, recordModel, ICreateOneRecordDto } from '@postgres/models';
-import { EEndType, EWind, Record } from '@postgres/entities';
+import { roundModel, recordModel, ICreateOneRecordDto, playerModel, recordLoserModel, ICreateOneLoserByPlayerDto } from '@postgres/models';
+import { EEndType, EWind, IPlayer, Record } from '@postgres/entities';
 import { currentRound } from "../round/round";
 
 const { success, fail } = http;
-const logger = loggerFactory('Api Record');
+const logger = loggerFactory('Api record');
 interface IPostOne {
-    winner: number;
-    loser: number[];
-    circle: number;
-    dealer: number;
+    winner: string;
+    loser: string[];
+    circle: EWind;
+    dealer: EWind;
     dealerCount: number;
     endType: EEndType;
     point: number;
@@ -21,12 +21,27 @@ interface IPostOne {
 
 const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        //TODO functional
         const { roundUid } = req.params;
         const { body }: { body: IPostOne } = req;
+        logger.debug('post one record', body);
         const round = await roundModel.readOneByUid(roundUid);
-        const dto: ICreateOneRecordDto = {
+        const winner = await playerModel.readOneByName(body.winner);
+        const loser = await playerModel.readManyByNames(body.loser);
+        const recordDto: ICreateOneRecordDto = {
             ...body,
-        }
+            winner: winner,
+            round: round
+        };
+        const record = await recordModel.createOne(recordDto);
+        const recordLoser = loser.map(async player => {
+            const recordLoserDto: ICreateOneLoserByPlayerDto = {
+                player: player,
+                record: record
+            };
+            return await recordLoserModel.createLoserByPlayer(recordLoserDto);
+        });
+        success(res, { record: record, recordLoser: recordLoser });
     } catch (err) {
         next(err);
         fail(res, err);

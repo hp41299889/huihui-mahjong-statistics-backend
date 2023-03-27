@@ -3,7 +3,7 @@ import { IPlayer } from './player';
 import { IRecord } from './record';
 
 interface IRecordLoser {
-    id: number;
+    uid: string;
     player: IPlayer;
     record: IRecord;
 };
@@ -11,10 +11,11 @@ interface IRecordLoser {
 const RecordLoser = new EntitySchema<IRecordLoser>({
     name: 'record_loser',
     columns: {
-        id: {
+        uid: {
             primary: true,
-            type: Number,
-        }
+            type: 'uuid',
+            generated: 'uuid'
+        },
     },
     relations: {
         player: {

@@ -3,14 +3,12 @@ import loggerFactory from '@utils/logger';
 import { Record, IPlayer, IRecordLoser, IRound, EEndType, EWind } from '@postgres/entities';
 
 const logger = loggerFactory('Model Record');
-
 const repo = postgres.getRepository(Record);
 
 interface ICreateOneRecordDto {
     winner: IPlayer;
-    loser: IRecordLoser[];
-    circle: number;
-    dealer: number;
+    circle: EWind;
+    dealer: EWind;
     dealerCount: number;
     endType: EEndType;
     point: number;
@@ -19,9 +17,11 @@ interface ICreateOneRecordDto {
 
 const createOne = async (dto: ICreateOneRecordDto) => {
     try {
-        logger.debug('create one');
+        logger.debug('create one record', dto);
         return await repo.save(dto);
     } catch (err) {
+        console.log(err);
+
         throw err;
     };
 };

@@ -18,7 +18,7 @@ interface IRound {
     north: IPlayer;
     records: IRecord[];
     createdAt: Date;
-    updatedAt: Date;
+    // updatedAt: Date;
 };
 
 const Round = new EntitySchema<IRound>({
@@ -45,11 +45,11 @@ const Round = new EntitySchema<IRound>({
             type: 'timestamp',
             createDate: true
         },
-        updatedAt: {
-            name: 'updated_at',
-            type: 'timestamp',
-            updateDate: true
-        }
+        // updatedAt: {
+        //     name: 'updated_at',
+        //     type: 'timestamp',
+        //     updateDate: true
+        // }
     },
     relations: {
         east: {
@@ -70,7 +70,8 @@ const Round = new EntitySchema<IRound>({
         },
         records: {
             target: 'record',
-            type: 'many-to-one',
+            type: 'one-to-many',
+            joinColumn: { name: 'roundUid' }
         }
     }
 });

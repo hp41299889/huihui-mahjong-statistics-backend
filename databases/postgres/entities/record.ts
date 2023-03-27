@@ -21,14 +21,14 @@ interface IRecord {
     uid: string;
     winner: IPlayer;
     loser: IRecordLoser[];
-    circle: number;
-    dealer: number;
+    circle: EWind;
+    dealer: EWind;
     dealerCount: number;
     endType: EEndType;
     point: number;
     round: IRound;
     createdAt: Date;
-    updatedAt: Date;
+    // updatedAt: Date;
 };
 
 const Record = new EntitySchema<IRecord>({
@@ -40,10 +40,12 @@ const Record = new EntitySchema<IRecord>({
             generated: 'uuid'
         },
         circle: {
-            type: Number,
+            type: 'enum',
+            enum: EWind
         },
         dealer: {
-            type: Number,
+            type: 'enum',
+            enum: EWind
         },
         dealerCount: {
             type: Number
@@ -60,24 +62,26 @@ const Record = new EntitySchema<IRecord>({
             type: 'timestamp',
             createDate: true
         },
-        updatedAt: {
-            name: 'updated_at',
-            type: 'timestamp',
-            updateDate: true
-        }
+        // updatedAt: {
+        //     name: 'updated_at',
+        //     type: 'timestamp',
+        //     updateDate: true
+        // }
     },
     relations: {
         winner: {
             target: 'player',
             type: 'many-to-one',
+            joinColumn: { name: 'winnerId' }
         },
         loser: {
-            target: 'record_loser',
+            target: 'player',
             type: 'one-to-many',
         },
         round: {
             target: 'round',
             type: 'many-to-one',
+            joinColumn: { name: 'roundUid' }
         }
     }
 });

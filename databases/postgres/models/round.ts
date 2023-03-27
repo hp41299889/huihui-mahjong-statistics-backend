@@ -1,5 +1,6 @@
 import postgres from '@postgres/postgres';
 import { EDeskType, IPlayer, Round } from '@postgres/entities';
+import loggerFactory from '@utils/logger';
 
 interface ICreateOneRoundDto {
     deskType: EDeskType;
@@ -10,11 +11,13 @@ interface ICreateOneRoundDto {
     west: IPlayer;
     north: IPlayer;
 };
-
+const logger = loggerFactory('Model round');
 const repo = postgres.getRepository(Round);
 
 const createOne = async (dto: ICreateOneRoundDto) => {
     try {
+        logger.debug('create one round', dto);
+        logger.warn(dto);
         return await repo.save(dto);
     } catch (err) {
         throw err;
