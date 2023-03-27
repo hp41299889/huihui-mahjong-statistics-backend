@@ -24,7 +24,8 @@ const postOne = async (req: Request, res: Response, next: NextFunction) => {
         //TODO functional
         const { roundUid } = req.params;
         const { body }: { body: IPostOne } = req;
-        logger.debug('post one record', body);
+        logger.debug('post one record');
+        logger.warn(body);
         const round = await roundModel.readOneByUid(roundUid);
         const winner = await playerModel.readOneByName(body.winner);
         const loser = await playerModel.readManyByNames(body.loser);

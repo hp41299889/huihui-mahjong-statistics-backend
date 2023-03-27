@@ -54,7 +54,18 @@ const postOne = async (req: Request, res: Response, next: NextFunction) => {
 const getLast = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const round = await roundModel.readLast();
-        const result = round.uid;
+        const result = {
+            roundUid: round.uid,
+            players: {
+                east: round.east,
+                south: round.south,
+                west: round.west,
+                north: round.north
+            },
+            base: round.base,
+            point: round.point,
+            deskType: round.deskType
+        };
         // if (currentRound.uid) {
         //     console.log('yes');
         //     const currentRecord = await recordModel.readLastByRoundUid(currentRound.uid);

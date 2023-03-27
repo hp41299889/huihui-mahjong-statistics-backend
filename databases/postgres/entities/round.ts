@@ -55,18 +55,22 @@ const Round = new EntitySchema<IRound>({
         east: {
             target: 'player',
             type: 'many-to-one',
+            eager: true
         },
         south: {
             target: 'player',
             type: 'many-to-one',
+            eager: true
         },
         west: {
             target: 'player',
             type: 'many-to-one',
+            eager: true
         },
         north: {
             target: 'player',
             type: 'many-to-one',
+            eager: true
         },
         records: {
             target: 'record',

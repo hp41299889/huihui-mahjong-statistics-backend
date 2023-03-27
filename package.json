@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "node ./build/index.js",
+    "start": "node -r ./build/register-tsconfig-paths ./build/index.js",
     "build": "rm -rf build && tsc",
     "dev": "nodemon -r tsconfig-paths/register index.ts",
     "typeorm": "typeorm-ts-node-commonjs -d ./databases/postgres/postgres.ts",

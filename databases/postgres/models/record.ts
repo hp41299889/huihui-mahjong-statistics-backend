@@ -18,10 +18,9 @@ interface ICreateOneRecordDto {
 const createOne = async (dto: ICreateOneRecordDto) => {
     try {
         logger.debug('create one record', dto);
+        logger.warn(dto);
         return await repo.save(dto);
     } catch (err) {
-        console.log(err);
-
         throw err;
     };
 };
