@@ -1,15 +1,21 @@
-import { EDeskType } from "@postgres/entities/index";
+import { EDeskType, EWind, IPlayer } from "@postgres/entities/index";
 
 export {
-    IRound
+    ICurrentRound
 };
 
-interface IRound {
+interface ICurrentRound {
+    roundUid: string;
     deskType: EDeskType;
     base: number;
     point: number;
-    eastName: string;
-    southName: string;
-    westName: string;
-    northName: string;
+    players: {
+        east: IPlayer
+        south: IPlayer
+        west: IPlayer
+        north: IPlayer
+    };
+    circle: EWind;
+    dealer: EWind;
+    dealerCount: number;
 };

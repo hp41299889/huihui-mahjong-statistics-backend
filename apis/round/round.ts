@@ -2,18 +2,26 @@ import { Request, Response, NextFunction } from "express";
 
 import http from '@utils/http';
 import loggerFactory from "@utils/logger";
-import { IRound } from "./interface";
-import { EDeskType, Round } from '@postgres/entities';
+import { ICurrentRound } from "./interface";
+import { EDeskType, EWind, IPlayer, IRecord, Round } from '@postgres/entities';
 import { playerModel, recordModel, roundModel, ICreateOneRoundDto } from '@postgres/models';
 // import { isDealerContinue } from "../record/record";
 const logger = loggerFactory('Api round');
 const { success, fail } = http;
 
-export const currentRound = {
-    uid: '',
-    players: ['', '', '', ''],
-    circle: 0,
-    dealer: 0,
+export const currentRound: ICurrentRound = {
+    roundUid: '',
+    deskType: EDeskType.AUTO,
+    base: 0,
+    point: 0,
+    players: {
+        east: null,
+        south: null,
+        west: null,
+        north: null
+    },
+    circle: EWind.EAST,
+    dealer: EWind.EAST,
     dealerCount: 0,
 };
 
@@ -54,6 +62,17 @@ const postOne = async (req: Request, res: Response, next: NextFunction) => {
 const getLast = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const round = await roundModel.readLast();
+        const lastRecord = await recordModel.readLastByRoundUid(round.uid);
+
+        if (currentRound.roundUid) {
+
+        } else {
+            if (isLastRecord(lastRecord, round.north)) {
+
+            } else {
+
+            };
+        };
         const result = {
             roundUid: round.uid,
             players: {
@@ -104,6 +123,11 @@ const getLast = async (req: Request, res: Response, next: NextFunction) => {
         next(err);
         fail(res, err);
     };
+};
+
+const isLastRecord = (record: IRecord, north: IPlayer) => {
+    if (record.circle === EWind.NORTH && record.dealer && record.winner != north) return true;
+    return false;
 };
 
 export default {
