@@ -1,35 +1,7 @@
 import { EntitySchema } from 'typeorm';
-import { IPlayer } from './player';
-import { IRound } from './round';
-import { IRecordLoser } from './recordLoser';
 
-enum EEndType {
-    WINNING = 'winning',
-    SELF_DRAWN = 'self-drawn',
-    DRAW = 'draw',
-    FAKE = 'fake'
-};
-
-enum EWind {
-    EAST = 'east',
-    SOUTH = 'south',
-    WEST = 'west',
-    NORTH = 'north',
-};
-
-interface IRecord {
-    uid: string;
-    winner: IPlayer;
-    loser: IRecordLoser[];
-    circle: EWind;
-    dealer: EWind;
-    dealerCount: number;
-    endType: EEndType;
-    point: number;
-    round: IRound;
-    createdAt: Date;
-    // updatedAt: Date;
-};
+import { EWind, EEndType } from './record.enum';
+import { IRecord } from './record.interface';
 
 const Record = new EntitySchema<IRecord>({
     name: 'record',
@@ -38,6 +10,14 @@ const Record = new EntitySchema<IRecord>({
             primary: true,
             type: 'uuid',
             generated: 'uuid'
+        },
+        winner: {
+            type: 'enum',
+            enum: EWind
+        },
+        loser: {
+            type: 'simple-array',
+            enum: EWind
         },
         circle: {
             type: 'enum',
@@ -69,15 +49,15 @@ const Record = new EntitySchema<IRecord>({
         // }
     },
     relations: {
-        winner: {
-            target: 'player',
-            type: 'many-to-one',
-            joinColumn: { name: 'winnerId' }
-        },
-        loser: {
-            target: 'player',
-            type: 'one-to-many',
-        },
+        // winner: {
+        //     target: 'player',
+        //     type: 'many-to-one',
+        //     joinColumn: { name: 'winnerId' }
+        // },
+        // loser: {
+        //     target: 'player',
+        //     type: 'one-to-many',
+        // },
         round: {
             target: 'round',
             type: 'many-to-one',
@@ -86,5 +66,4 @@ const Record = new EntitySchema<IRecord>({
     }
 });
 
-export { IRecord, EEndType, EWind };
 export default Record;

@@ -11,6 +11,9 @@
       "@postgres/*": [
         "./databases/postgres/*"
       ],
+      "@apis/*": [
+        "./apis/*"
+      ]
     },
     "target": "es2016",
     "module": "commonjs",

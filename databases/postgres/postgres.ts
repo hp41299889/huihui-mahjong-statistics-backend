@@ -1,7 +1,6 @@
 import { DataSource } from "typeorm";
 
 import { postgresConfig } from '@configs/config';
-import { Player, Record, RecordLoser, Round } from './entities/index';
 
 const Postgres = new DataSource({
     type: 'postgres',
@@ -14,7 +13,7 @@ const Postgres = new DataSource({
         Player,
         Record,
         Round,
-        RecordLoser
+        // RecordLoser
     ],
     migrations: [],
     migrationsTableName: 'migrations',

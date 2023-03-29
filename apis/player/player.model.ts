@@ -1,11 +1,9 @@
-import postgres from '@postgres/postgres';
-import { Player } from '@postgres/entities';
 import { In } from 'typeorm';
-import loggerFactory from '@utils/logger';
 
-interface ICreateOnePlayerDto {
-    name: string;
-};
+import postgres from '@postgres/postgres';
+import loggerFactory from '@utils/logger';
+import { Player } from './player.entity';
+import { ICreateOnePlayerDto } from './player.interface';
 
 const logger = loggerFactory('Model player');
 const repo = postgres.getRepository(Player);
@@ -50,7 +48,6 @@ const readManyByNames = async (playerNames: string[]) => {
     }
 };
 
-export { ICreateOnePlayerDto };
 export default {
     createOne,
     readAll,

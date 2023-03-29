@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import player from './player';
+import player from './player.service';
 
 const {
     postOne,

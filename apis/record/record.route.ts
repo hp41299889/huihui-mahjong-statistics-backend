@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import record from './record';
+import record from './record.service';
 
 const {
     postOne

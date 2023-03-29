@@ -1,25 +1,7 @@
 import { EntitySchema } from 'typeorm';
-import { IPlayer } from './player';
-import { IRecord } from './record';
 
-enum EDeskType {
-    AUTO = 'auto',
-    MANUAL = 'manual'
-};
-
-interface IRound {
-    uid: string;
-    deskType: EDeskType;
-    base: number;
-    point: number;
-    east: IPlayer;
-    south: IPlayer;
-    west: IPlayer;
-    north: IPlayer;
-    records: IRecord[];
-    createdAt: Date;
-    // updatedAt: Date;
-};
+import { EDeskType } from './round.enum';
+import { IRound } from './round.interface';
 
 const Round = new EntitySchema<IRound>({
     name: 'round',
@@ -80,5 +62,4 @@ const Round = new EntitySchema<IRound>({
     }
 });
 
-export { IRound, EDeskType };
 export default Round;

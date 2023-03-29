@@ -1,19 +1,10 @@
 import postgres from '@postgres/postgres';
 import loggerFactory from '@utils/logger';
-import { Record, IPlayer, IRecordLoser, IRound, EEndType, EWind } from '@postgres/entities';
+import Record from './record.entity';
+import { ICreateOneRecordDto } from './record.interface';
 
 const logger = loggerFactory('Model Record');
 const repo = postgres.getRepository(Record);
-
-interface ICreateOneRecordDto {
-    winner: IPlayer;
-    circle: EWind;
-    dealer: EWind;
-    dealerCount: number;
-    endType: EEndType;
-    point: number;
-    round: IRound;
-};
 
 const createOne = async (dto: ICreateOneRecordDto) => {
     try {
@@ -49,7 +40,7 @@ const readLastByRoundUid = async (roundUid: string) => {
         throw err;
     };
 };
-export { ICreateOneRecordDto };
+
 export default {
     createOne,
     readAll,

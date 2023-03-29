@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import round from './round';
+import round from './round.service';
 
 const {
     postOne,

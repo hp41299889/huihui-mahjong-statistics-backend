@@ -1,16 +1,9 @@
 import postgres from '@postgres/postgres';
-import { EDeskType, IPlayer, Round } from '@postgres/entities';
 import loggerFactory from '@utils/logger';
+import Round from './round.entity';
+import { ICreateOneRoundDto } from './round.interface';
 
-interface ICreateOneRoundDto {
-    deskType: EDeskType;
-    base: number;
-    point: number;
-    east: IPlayer;
-    south: IPlayer;
-    west: IPlayer;
-    north: IPlayer;
-};
+
 const logger = loggerFactory('Model round');
 const repo = postgres.getRepository(Round);
 
@@ -56,7 +49,6 @@ const readLast = async () => {
     };
 };
 
-export { ICreateOneRoundDto };
 export default {
     createOne,
     readAll,
