@@ -1,6 +1,9 @@
 import { DataSource } from "typeorm";
 
 import { postgresConfig } from '@configs/config';
+import Player from "@apis/player/player.entity";
+import Record from "@apis/record/record.entity";
+import Round from "@apis/round/round.entity";
 
 const Postgres = new DataSource({
     type: 'postgres',

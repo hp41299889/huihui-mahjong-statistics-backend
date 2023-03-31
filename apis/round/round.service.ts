@@ -31,8 +31,6 @@ export const currentRound: ICurrentRound = {
     dealerCount: 0,
 };
 
-
-
 const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { body }: { body: IPostOne } = req;
@@ -59,39 +57,49 @@ const postOne = async (req: Request, res: Response, next: NextFunction) => {
 
 const getLast = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        //TODO last record可能為空
+        logger.debug('get last round');
         const round = await roundModel.readLast();
+        logger.warn('last round', round);
+        logger.warn(round);
+
         const lastRecord = await recordModel.readLastByRoundUid(round.uid);
-
-        // if (currentRound.roundUid) {
-        //     success(res, currentRound);
-        // } else {
-        //     if (isLastRecord(lastRecord, round.north)) {
-
-        //     } else {
-        //         success(res, round);
-        //     };
-        // };
-        const result = {
-            roundUid: round.uid,
-            players: {
-                east: round.east,
-                south: round.south,
-                west: round.west,
-                north: round.north
-            },
-            base: round.base,
-            point: round.point,
-            deskType: round.deskType
+        logger.warn('last record for the round');
+        logger.warn(lastRecord);
+        if (currentRound.roundUid) {
+            logger.warn('currentRound', currentRound);
+            success(res, currentRound);
+        } else {
+            if (isLastRecord(lastRecord)) {
+                currentRound.roundUid = '';
+                logger.warn('currentRound', currentRound);
+                success(res, 'this round is end, go to post round page');
+            } else {
+                currentRound.roundUid = round.uid;
+                currentRound.base = round.base;
+                currentRound.point = round.point;
+                currentRound.deskType = round.deskType;
+                currentRound.players = {
+                    east: round.east,
+                    south: round.south,
+                    west: round.west,
+                    north: round.north
+                },
+                    currentRound.circle = lastRecord.circle;
+                currentRound.dealer = lastRecord.dealer;
+                currentRound.dealerCount = lastRecord.dealerCount;
+                logger.warn('currentRound', currentRound);
+                success(res, currentRound);
+            };
         };
-        success(res, result);
     } catch (err) {
         next(err);
         fail(res, err);
     };
 };
 
-const isLastRecord = (record: IRecord, north: IPlayer) => {
-    // if (record.circle === EWind.NORTH && record.dealer && record.winner != north) return true;
+const isLastRecord = (record: IRecord) => {
+    if (record.circle === EWind.NORTH && record.dealer === EWind.NORTH && record.winner != EWind.NORTH) return true;
     return false;
 };
 

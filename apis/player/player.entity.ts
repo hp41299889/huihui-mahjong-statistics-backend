@@ -38,4 +38,4 @@ const Player = new EntitySchema<IPlayer>({
     }
 });
 
-export { Player };
+export default Player;

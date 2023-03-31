@@ -2,7 +2,7 @@ import { In } from 'typeorm';
 
 import postgres from '@postgres/postgres';
 import loggerFactory from '@utils/logger';
-import { Player } from './player.entity';
+import Player from './player.entity';
 import { ICreateOnePlayerDto } from './player.interface';
 
 const logger = loggerFactory('Model player');
