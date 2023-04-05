@@ -1,10 +1,9 @@
 import { Router } from "express";
 
-import record from './record.service';
-
-const {
+import {
     postOne
-} = record;
+} from './record.service';
+
 
 const router = Router();
 

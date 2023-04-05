@@ -1,11 +1,9 @@
 import { Router } from "express";
 
-import round from './round.service';
-
-const {
+import {
     postOne,
     getLast
-} = round;
+} from './round.service';
 
 const router = Router();
 

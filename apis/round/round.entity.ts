@@ -3,7 +3,7 @@ import { EntitySchema } from 'typeorm';
 import { EDeskType } from './round.enum';
 import { IRound } from './round.interface';
 
-const Round = new EntitySchema<IRound>({
+export const Round = new EntitySchema<IRound>({
     name: 'round',
     columns: {
         uid: {
@@ -61,5 +61,3 @@ const Round = new EntitySchema<IRound>({
         }
     }
 });
-
-export default Round;

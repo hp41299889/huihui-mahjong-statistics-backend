@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "node -r ./build/register-tsconfig-paths ./build/index.js",
+    "start": "node ./build/index.js",
     "build": "rm -rf build && tsc",
-    "dev": "nodemon -r tsconfig-paths/register index.ts",
+    "dev": "nodemon index.ts",
     "typeorm": "typeorm-ts-node-commonjs -d ./databases/postgres/postgres.ts",
     "migration:generate": "npm run typeorm migration:generate ./databases/postgres/migrations/migration",
-    "migration:run": "npm run typeorm migration:run",
+    "migration:run": "npx typeorm-ts-node-commonjs -d ./build/databases/postgres/postgres.js migration:run",
     "migration:revert": "npm run typeorm migration:revert",
     "docker:build": "npm run build && docker build -t hp4129889/huihui-mahjong:backend .",
     "docker:push": "docker push hp4129889/huihui-mahjong:backend",
@@ -33,7 +33,7 @@
     "@types/lodash": "^4.14.191",
     "nodemon": "^2.0.21",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.1.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^4.9.5"
   }
 }

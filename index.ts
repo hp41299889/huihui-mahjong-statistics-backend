@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import routes from './apis';
 import { appConfig } from './configs/config';
+import { Postgres } from './databases/postgres/postgres';
 
 const app = express();
 app.use(express.json());
@@ -24,8 +25,19 @@ const appInit = async () => {
 
 appInit()
     .then(() => {
+        Postgres.initialize()
+            .then(() => {
+                console.log('postgres connect success');
+
+            })
+    })
+    .then(() => {
         app.listen(appConfig.port, () => {
             console.log('app running on port', appConfig.port);
 
         });
-    });
+    })
+    .catch(err => {
+        console.log(err);
+
+    })

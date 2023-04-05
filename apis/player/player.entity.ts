@@ -2,7 +2,7 @@ import { EntitySchema, EntitySchemaColumnOptions } from 'typeorm';
 
 import { IPlayer } from './player.interface';
 
-const Player = new EntitySchema<IPlayer>({
+export const Player = new EntitySchema<IPlayer>({
     name: 'player',
     columns: {
         id: {
@@ -26,16 +26,5 @@ const Player = new EntitySchema<IPlayer>({
             type: 'one-to-many',
             joinColumn: { name: 'roundUid' }
         },
-        // winners: {
-        //     type: 'one-to-many',
-        //     target: 'record',
-        //     joinColumn: { name: 'playerId' }
-        // },
-        // losers: {
-        //     type: 'one-to-many',
-        //     target: 'record_loser',
-        // }
     }
 });
-
-export default Player;

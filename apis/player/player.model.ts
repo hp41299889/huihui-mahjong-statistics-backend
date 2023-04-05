@@ -1,14 +1,14 @@
 import { In } from 'typeorm';
 
-import postgres from '@postgres/postgres';
-import loggerFactory from '@utils/logger';
-import Player from './player.entity';
+import { Postgres } from '../../databases/postgres/postgres';
+import loggerFactory from '../../utils/logger';
+import { Player } from './player.entity';
 import { ICreateOnePlayerDto } from './player.interface';
 
 const logger = loggerFactory('Model player');
-const repo = postgres.getRepository(Player);
+const repo = Postgres.getRepository(Player);
 
-const createOne = (dto: ICreateOnePlayerDto) => {
+export const createOne = (dto: ICreateOnePlayerDto) => {
     try {
         logger.debug('create one player', dto);
         logger.warn(dto);
@@ -18,7 +18,7 @@ const createOne = (dto: ICreateOnePlayerDto) => {
     };
 };
 
-const readAll = () => {
+export const readAll = () => {
     try {
         return repo.find();
     } catch (err) {
@@ -26,7 +26,7 @@ const readAll = () => {
     };
 };
 
-const readOneByName = async (playerName: string) => {
+export const readOneByName = async (playerName: string) => {
     try {
         return await repo.findOneBy({
             name: playerName
@@ -36,7 +36,7 @@ const readOneByName = async (playerName: string) => {
     };
 };
 
-const readManyByNames = async (playerNames: string[]) => {
+export const readManyByNames = async (playerNames: string[]) => {
     try {
         return repo.find({
             where: {
@@ -46,11 +46,4 @@ const readManyByNames = async (playerNames: string[]) => {
     } catch (err) {
         throw err;
     }
-};
-
-export default {
-    createOne,
-    readAll,
-    readOneByName,
-    readManyByNames
 };

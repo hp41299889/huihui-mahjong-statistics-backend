@@ -1,13 +1,12 @@
-import postgres from '@postgres/postgres';
-import loggerFactory from '@utils/logger';
-import Round from './round.entity';
+import { Postgres } from '../../databases/postgres/postgres';
+import loggerFactory from '../../utils/logger';
+import { Round } from './round.entity';
 import { ICreateOneRoundDto } from './round.interface';
 
-
 const logger = loggerFactory('Model round');
-const repo = postgres.getRepository(Round);
+const repo = Postgres.getRepository(Round);
 
-const createOne = async (dto: ICreateOneRoundDto) => {
+export const createOne = async (dto: ICreateOneRoundDto) => {
     try {
         logger.debug('create one round', dto);
         logger.warn(dto);
@@ -17,7 +16,7 @@ const createOne = async (dto: ICreateOneRoundDto) => {
     };
 };
 
-const readAll = async () => {
+export const readAll = async () => {
     try {
         return repo.find();
     } catch (err) {
@@ -26,7 +25,7 @@ const readAll = async () => {
 };
 
 
-const readOneByUid = async (uid: string) => {
+export const readOneByUid = async (uid: string) => {
     try {
         return repo.findOneBy({ uid: uid });
     } catch (err) {
@@ -34,7 +33,7 @@ const readOneByUid = async (uid: string) => {
     };
 };
 
-const readLast = async () => {
+export const readLast = async () => {
     try {
         return repo.findOne({
             where: {
@@ -47,11 +46,4 @@ const readLast = async () => {
     } catch (err) {
         throw err;
     };
-};
-
-export default {
-    createOne,
-    readAll,
-    readLast,
-    readOneByUid
 };

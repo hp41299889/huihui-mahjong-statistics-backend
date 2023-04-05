@@ -1,8 +1,9 @@
 import { EWind, EEndType } from "./record.enum";
-import { IRound } from "@apis/round/round.interface";
+// import { IRound } from "@apis/round/round.interface";
+import { IRound } from "../round/round.interface";
 
 //entity
-interface IRecord {
+export interface IRecord {
     //generate
     uid: string;
     createdAt: Date;
@@ -20,7 +21,7 @@ interface IRecord {
 };
 
 //service
-interface IPostOne {
+export interface IPostOne {
     winner: EWind;
     loser: EWind[];
     circle: EWind;
@@ -31,7 +32,7 @@ interface IPostOne {
 };
 
 //model
-interface ICreateOneRecordDto {
+export interface ICreateOneRecordDto {
     winner: EWind;
     loser: EWind[];
     circle: EWind;
@@ -41,9 +42,3 @@ interface ICreateOneRecordDto {
     point: number;
     round: IRound;
 };
-
-export {
-    IPostOne,
-    IRecord,
-    ICreateOneRecordDto
-}

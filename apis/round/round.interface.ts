@@ -1,10 +1,9 @@
+import { IPlayer } from '../player/player.interface';
+import { IRecord } from '../record/record.interface';
+import { EWind } from '../record/record.enum';
 import { EDeskType } from "./round.enum";
-import { EWind } from "@apis/record/record.enum";
-import { IPlayer } from "@apis/player/player.interface";
-import { IRecord } from "@apis/record/record.interface";
-
 //entity
-interface IRound {
+export interface IRound {
     //generate
     uid: string;
     createdAt: Date;
@@ -21,7 +20,7 @@ interface IRound {
     // updatedAt: Date;
 };
 
-interface ICurrentRound {
+export interface ICurrentRound {
     roundUid: string;
     deskType: EDeskType;
     base: number;
@@ -38,7 +37,7 @@ interface ICurrentRound {
 };
 
 //service
-interface IPostOne {
+export interface IPostOne {
     deskType: EDeskType;
     base: number;
     point: number;
@@ -49,7 +48,7 @@ interface IPostOne {
 };
 
 //model
-interface ICreateOneRoundDto {
+export interface ICreateOneRoundDto {
     deskType: EDeskType;
     base: number;
     point: number;
@@ -57,11 +56,4 @@ interface ICreateOneRoundDto {
     south: IPlayer;
     west: IPlayer;
     north: IPlayer;
-};
-
-export {
-    IRound,
-    ICurrentRound,
-    ICreateOneRoundDto,
-    IPostOne
 };

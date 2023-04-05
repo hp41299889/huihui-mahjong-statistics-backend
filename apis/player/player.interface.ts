@@ -1,7 +1,8 @@
-import { IRound } from "@apis/round/round.interface";
+// import { IRound } from "@apis/round/round.interface";
+import { IRound } from '../round/round.interface';
 
 //entity
-interface IPlayer {
+export interface IPlayer {
     id: number;
     name: string;
     rounds: IRound[];
@@ -12,11 +13,6 @@ interface IPlayer {
 };
 
 //model
-interface ICreateOnePlayerDto {
+export interface ICreateOnePlayerDto {
     name: string;
 };
-
-export {
-    IPlayer,
-    ICreateOnePlayerDto
-}

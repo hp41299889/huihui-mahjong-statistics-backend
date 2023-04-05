@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 
-import http from '@utils/http';
-import loggerFactory from '@utils/logger';
-import playerModel from './player.model';
+import http from '../../utils/http';
+import loggerFactory from '../../utils/logger';
+import * as playerModel from './player.model';
 import { ICreateOnePlayerDto } from './player.interface';
 
 const logger = loggerFactory('Api player');

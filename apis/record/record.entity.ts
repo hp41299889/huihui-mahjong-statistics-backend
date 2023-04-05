@@ -3,7 +3,7 @@ import { EntitySchema } from 'typeorm';
 import { EWind, EEndType } from './record.enum';
 import { IRecord } from './record.interface';
 
-const Record = new EntitySchema<IRecord>({
+export const Record = new EntitySchema<IRecord>({
     name: 'record',
     columns: {
         uid: {
@@ -42,22 +42,8 @@ const Record = new EntitySchema<IRecord>({
             type: 'timestamp',
             createDate: true
         },
-        // updatedAt: {
-        //     name: 'updated_at',
-        //     type: 'timestamp',
-        //     updateDate: true
-        // }
     },
     relations: {
-        // winner: {
-        //     target: 'player',
-        //     type: 'many-to-one',
-        //     joinColumn: { name: 'winnerId' }
-        // },
-        // loser: {
-        //     target: 'player',
-        //     type: 'one-to-many',
-        // },
         round: {
             target: 'round',
             type: 'many-to-one',
@@ -65,5 +51,3 @@ const Record = new EntitySchema<IRecord>({
         }
     }
 });
-
-export default Record;

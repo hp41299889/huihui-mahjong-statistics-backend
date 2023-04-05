@@ -1,11 +1,12 @@
 import { DataSource } from "typeorm";
 
-import { postgresConfig } from '@configs/config';
-import Player from "@apis/player/player.entity";
-import Record from "@apis/record/record.entity";
-import Round from "@apis/round/round.entity";
+import { postgresConfig } from '../../configs/config';
+import { Player } from '../../apis/player/player.entity';
+import { Record } from '../../apis/record/record.entity';
+import { Round } from '../../apis/round/round.entity';
+import { migration1680509971986 } from "./migrations/1680509971986-migration";
 
-const Postgres = new DataSource({
+export const Postgres = new DataSource({
     type: 'postgres',
     host: postgresConfig.host,
     port: +postgresConfig.port,
@@ -16,16 +17,8 @@ const Postgres = new DataSource({
         Player,
         Record,
         Round,
-        // RecordLoser
     ],
-    migrations: [],
+    migrations: [migration1680509971986],
     migrationsTableName: 'migrations',
-    synchronize: true
+    // synchronize: true
 });
-
-Postgres.initialize()
-    .then(() => {
-        console.log('postgres connect success');
-    });
-
-export default Postgres;
