@@ -3,7 +3,8 @@ import 'dotenv/config';
 const { env } = process;
 
 export const appConfig = {
-    port: env.APP_PORT
+    port: env.APP_PORT,
+    prefix: env.APP_API_PREFIX
 };
 
 export const postgresConfig = {

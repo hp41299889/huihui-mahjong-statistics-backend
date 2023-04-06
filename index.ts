@@ -8,36 +8,30 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const routeInit = () => {
-    app.use('/player', routes.player);
-    app.use('/record', routes.record);
-    app.use('/round', routes.round);
+const routeInit = (): void => {
+    Object.entries(routes).forEach(([key, router]) => {
+        app.use(`${appConfig.prefix}/${key}`, router);
+    });
 };
 
-const serviceInit = () => {
-    // services.postgresInit();
+const dbInit = (): void => {
+    Postgres.initialize()
+        .then(() => {
+            console.log('postgres connect success');
+        });
 };
 
 const appInit = async () => {
-    routeInit();
-    serviceInit();
-};
-
-appInit()
-    .then(() => {
-        Postgres.initialize()
-            .then(() => {
-                console.log('postgres connect success');
-
-            })
-    })
-    .then(() => {
+    try {
+        routeInit();
+        dbInit();
         app.listen(appConfig.port, () => {
             console.log('app running on port', appConfig.port);
-
         });
-    })
-    .catch(err => {
+    } catch (err) {
         console.log(err);
+        throw err;
+    }
+};
 
-    })
+appInit();
