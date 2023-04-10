@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import 'module-alias/register';
 import routes from './apis';
 import { appConfig } from './configs/config';
-import { Postgres } from './databases/postgres/postgres';
+// import { Postgres } from './databases/postgres/postgres';
+import { Postgres } from '@postgres';
 
 const app = express();
 app.use(express.json());

@@ -20,5 +20,5 @@ export const Postgres = new DataSource({
     ],
     migrations: [migration1680509971986],
     migrationsTableName: 'migrations',
-    // synchronize: true
+    synchronize: true
 });

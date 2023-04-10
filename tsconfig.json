@@ -8,8 +8,8 @@
       "@configs/*": [
         "./configs/*"
       ],
-      "@postgres/*": [
-        "./databases/postgres/*"
+      "@postgres": [
+        "./databases/postgres/postgres"
       ],
       "@apis/*": [
         "./apis/*"
