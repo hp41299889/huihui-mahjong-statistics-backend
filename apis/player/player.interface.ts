@@ -1,15 +1,16 @@
-// import { IRound } from "@apis/round/round.interface";
-import { IRound } from '../round/round.interface';
+import { IRound } from '@apis/round/round.interface';
 
 //entity
 export interface IPlayer {
+    //generate
     id: number;
-    name: string;
-    rounds: IRound[];
-    winners: IPlayer;
-    // losers: IRecordLoser[];
     createdAt: Date;
-    // updatedAt: Date;
+    //column
+    name: string;
+    //relation
+    rounds: IRound[];
+    winner: IPlayer;
+    loser: any;
 };
 
 //model

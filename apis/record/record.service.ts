@@ -1,12 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 
-import http from '../../utils/http';
-import loggerFactory from '../../utils/logger';
-import * as roundModel from '../round/round.model';
-import * as recordModel from "./record.model";
-import { EEndType, EWind } from "./record.enum";
+import { http, loggerFactory } from '@utils';
+import { currentRound } from '@apis/round/round.service';
+import { EWind, EEndType } from "./record.enum";
 import { IPostOne, ICreateOneRecordDto } from "./record.interface";
-import { currentRound } from "../round/round.service";
+import { takeWind } from "@apis/player/player.service";
+import playerModel from "@apis/player/player.model";
+import roundModel from "@apis/round/round.model";
+import recordModel from '@apis/record/record.model';
+import { ICreateOneLoserByPlayerDto } from "./recordLoser/recordLoser.interface";
+import recordLoserModel from "./recordLoser/recordLoser.model";
+
 
 const { success, fail } = http;
 const logger = loggerFactory('Api record');
@@ -23,25 +27,35 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
         const { roundUid } = req.params;
         const { body }: { body: IPostOne } = req;
         const round = await roundModel.readOneByUid(roundUid);
+        const winner = await playerModel.readOneByName(body.winner);
+        const loser = await playerModel.readManyByNames(body.loser);
         const recordDto: ICreateOneRecordDto = {
             ...body,
+            winner: winner,
             circle: currentRound.circle,
             dealer: currentRound.dealer,
             dealerCount: currentRound.dealerCount,
             round: round
         };
-        const result = await recordModel.createOne(recordDto);
-        await nextDealer(recordDto);
-        success(res, result);
+        const record = await recordModel.createOne(recordDto);
+        const recordLoser = loser.map(async player => {
+            const recordLoserDto: ICreateOneLoserByPlayerDto = {
+                player: player,
+                record: record
+            };
+            return await recordLoserModel.createLoserByPlayer(recordLoserDto);
+        });
+        await nextDealer(recordDto, takeWind(round, winner.name));
+        success(res, record);
     } catch (err) {
         next(err);
         fail(res, err);
     };
 };
 
-const nextDealer = async (record: IPostOne) => {
+const nextDealer = async (record: ICreateOneRecordDto, winnerWind: string) => {
     //如果連莊，連莊數+1
-    if (await isDealerContinue(record)) {
+    if (await isDealerContinue(record, winnerWind)) {
         logger.debug('連莊')
         currentRound.dealerCount++;
     } else {
@@ -75,9 +89,9 @@ const nextDealer = async (record: IPostOne) => {
     };
 };
 
-const isDealerContinue = async (record: IPostOne) => {
+const isDealerContinue = async (record: ICreateOneRecordDto, winnerWind: string) => {
     if (record.endType === EEndType.DRAW) return true;
     if (record.endType === EEndType.FAKE) return true;
-    if (record.winner === record.dealer) return true;
+    if (winnerWind === record.dealer) return true;
     return false;
 };

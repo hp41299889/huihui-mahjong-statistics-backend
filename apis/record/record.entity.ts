@@ -11,14 +11,6 @@ export const Record = new EntitySchema<IRecord>({
             type: 'uuid',
             generated: 'uuid'
         },
-        winner: {
-            type: 'enum',
-            enum: EWind
-        },
-        loser: {
-            type: 'simple-array',
-            enum: EWind
-        },
         circle: {
             type: 'enum',
             enum: EWind
@@ -48,6 +40,17 @@ export const Record = new EntitySchema<IRecord>({
             target: 'round',
             type: 'many-to-one',
             joinColumn: { name: 'roundUid' }
+        },
+        winner: {
+            target: 'player',
+            type: 'many-to-one',
+            joinColumn: { name: 'winnerId' },
+            eager: true
+        },
+        loser: {
+            target: 'player',
+            type: 'one-to-many',
+            inverseSide: 'record'
         }
     }
 });

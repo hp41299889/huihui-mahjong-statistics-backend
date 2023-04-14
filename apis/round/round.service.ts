@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 
 import { EDeskType } from "./round.enum";
-import http from '../../utils/http';
-import loggerFactory from '../../utils/logger';
-import * as roundModel from "./round.model";
-import * as recordModel from '../record/record.model';
-import * as playerModel from '../player/player.model';
-import { windList } from '../record/record.service';
-import { EWind } from '../record/record.enum';
-import { IRecord } from '../record/record.interface';
+import { http, loggerFactory } from '@utils';
+import roundModel from "./round.model";
+import { IRecord } from '@apis/record/record.interface';
+import { windList } from "@apis/record/record.service";
+import { EWind } from "@apis/record/record.enum";
 import { ICurrentRound, IPostOne, ICreateOneRoundDto } from "./round.interface";
+import { IPlayer } from "@apis/player/player.interface";
+import playerModel from "@apis/player/player.model";
+import recordModel from "@apis/record/record.model";
 
 const logger = loggerFactory('Api round');
 const { success, fail } = http;
@@ -88,7 +88,7 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
                     };
                     success(res, currentRound);
                 } else {
-                    if (isLastRecord(lastRecord)) {
+                    if (isLastRecord(lastRecord, currentRound.players.north)) {
                         currentRound.roundUid = '';
                         logger.warn('currentRound');
                         logger.warn(currentRound);
@@ -156,7 +156,7 @@ const isCurrentRoundExist = (currentRound: ICurrentRound): boolean => {
     };
 };
 
-const isLastRecord = (record: IRecord) => {
-    if (record.circle === EWind.NORTH && record.dealer === EWind.NORTH && record.winner != EWind.NORTH) return true;
+const isLastRecord = (record: IRecord, north: IPlayer) => {
+    if (record.circle === EWind.NORTH && record.dealer === EWind.NORTH && record.winner !== north) return true;
     return false;
 };

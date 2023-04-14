@@ -1,4 +1,4 @@
-import { EntitySchema, EntitySchemaColumnOptions } from 'typeorm';
+import { EntitySchema } from 'typeorm';
 
 import { IPlayer } from './player.interface';
 
@@ -9,7 +9,7 @@ export const Player = new EntitySchema<IPlayer>({
             primary: true,
             type: Number,
             generated: true
-        } as EntitySchemaColumnOptions,
+        },
         name: {
             type: String,
             unique: true
@@ -26,5 +26,13 @@ export const Player = new EntitySchema<IPlayer>({
             type: 'one-to-many',
             joinColumn: { name: 'roundUid' }
         },
+        winner: {
+            type: 'many-to-many',
+            target: 'record',
+        },
+        loser: {
+            type: 'one-to-many',
+            target: 'recordLoser'
+        }
     }
 });

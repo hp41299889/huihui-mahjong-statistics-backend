@@ -2,15 +2,13 @@ import { Router } from "express";
 
 import {
     postOne,
-    getLast
+    getLast,
 } from './round.service';
 
 const router = Router();
 
 router.route('/')
-    .get(getLast);
-
-router.route('/')
+    .get(getLast)
     .post(postOne);
 
 export default router;

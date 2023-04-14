@@ -27,11 +27,6 @@ export const Round = new EntitySchema<IRound>({
             type: 'timestamp',
             createDate: true
         },
-        // updatedAt: {
-        //     name: 'updated_at',
-        //     type: 'timestamp',
-        //     updateDate: true
-        // }
     },
     relations: {
         east: {

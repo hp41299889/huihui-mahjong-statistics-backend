@@ -1,12 +1,12 @@
-import loggerFactory from '../../utils/logger';
-import { Postgres } from '../../databases/postgres/postgres';
+import { loggerFactory } from '@utils';
+import { Postgres } from '@postgres';
 import { Record } from './record.entity';
-import { ICreateOneRecordDto } from './record.interface';
+import { ICreateOneRecordDto, IRecord } from './record.interface';
 
 const logger = loggerFactory('Model Record');
 const repo = Postgres.getRepository(Record);
 
-export const createOne = async (dto: ICreateOneRecordDto) => {
+const createOne = async (dto: ICreateOneRecordDto) => {
     try {
         logger.debug('create one record', dto);
         logger.warn(dto);
@@ -16,7 +16,7 @@ export const createOne = async (dto: ICreateOneRecordDto) => {
     };
 };
 
-export const readAll = async () => {
+const readAll = async () => {
     try {
         return await repo.find();
     } catch (err) {
@@ -24,7 +24,17 @@ export const readAll = async () => {
     };
 };
 
-export const readLastByRoundUid = async (roundUid: string) => {
+const readManyByRoundUid = async (roundUid: string): Promise<[IRecord[], number]> => {
+    return await repo.findAndCount({
+        where: {
+            round: {
+                uid: roundUid
+            }
+        }
+    });
+};
+
+const readLastByRoundUid = async (roundUid: string) => {
     try {
         return await repo.findOne({
             where: {
@@ -40,3 +50,16 @@ export const readLastByRoundUid = async (roundUid: string) => {
         throw err;
     };
 };
+
+const readManyByPlayerName = async (name: string) => {
+    return await repo.findAndCountBy({
+
+    })
+};
+
+export default {
+    createOne,
+    readAll,
+    readLastByRoundUid,
+    readManyByRoundUid
+}

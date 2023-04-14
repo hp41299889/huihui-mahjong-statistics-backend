@@ -1,10 +1,15 @@
 import { DataSource } from "typeorm";
 
+// import { postgresConfig } from '@configs/config';
+// import { Player } from '@apis/player';
+// import { Record, RecordLoser } from '@apis/record';
+// import { Round } from '@apis/round';
+import { Migration1681452210340 } from "./migrations/1681452210340-migration";
 import { postgresConfig } from '../../configs/config';
 import { Player } from '../../apis/player/player.entity';
 import { Record } from '../../apis/record/record.entity';
+import { RecordLoser } from '../../apis/record/recordLoser/recordLoser.entity';
 import { Round } from '../../apis/round/round.entity';
-import { migration1680509971986 } from "./migrations/1680509971986-migration";
 
 export const Postgres = new DataSource({
     type: 'postgres',
@@ -17,8 +22,9 @@ export const Postgres = new DataSource({
         Player,
         Record,
         Round,
+        RecordLoser
     ],
-    migrations: [migration1680509971986],
+    migrations: [Migration1681452210340],
     migrationsTableName: 'migrations',
     synchronize: true
 });

@@ -2,8 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@utils/*": [
-        "./utils/*"
+      "@utils": [
+        "./utils/index"
       ],
       "@configs/*": [
         "./configs/*"
@@ -27,6 +27,6 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "emitDecoratorMetadata": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
   }
 }

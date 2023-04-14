@@ -1,14 +1,14 @@
 import { In } from 'typeorm';
 
-import { Postgres } from '../../databases/postgres/postgres';
-import loggerFactory from '../../utils/logger';
+import { Postgres } from '@postgres';
+import { loggerFactory } from '@utils';
 import { Player } from './player.entity';
 import { ICreateOnePlayerDto } from './player.interface';
 
 const logger = loggerFactory('Model player');
 const repo = Postgres.getRepository(Player);
 
-export const createOne = (dto: ICreateOnePlayerDto) => {
+const createOne = (dto: ICreateOnePlayerDto) => {
     try {
         logger.debug('create one player', dto);
         logger.warn(dto);
@@ -18,7 +18,7 @@ export const createOne = (dto: ICreateOnePlayerDto) => {
     };
 };
 
-export const readAll = () => {
+const readAll = () => {
     try {
         return repo.find();
     } catch (err) {
@@ -26,24 +26,31 @@ export const readAll = () => {
     };
 };
 
-export const readOneByName = async (playerName: string) => {
+const readOneByName = async (name: string) => {
     try {
         return await repo.findOneBy({
-            name: playerName
+            name: name
         });
     } catch (err) {
         throw err;
     };
 };
 
-export const readManyByNames = async (playerNames: string[]) => {
+const readManyByNames = async (name: string[]) => {
     try {
         return repo.find({
             where: {
-                name: In(playerNames)
+                name: In(name)
             }
         })
     } catch (err) {
         throw err;
     }
+};
+
+export default {
+    createOne,
+    readAll,
+    readOneByName,
+    readManyByNames
 };
