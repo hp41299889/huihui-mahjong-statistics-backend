@@ -8,9 +8,6 @@ import { takeWind } from "@apis/player/player.service";
 import playerModel from "@apis/player/player.model";
 import roundModel from "@apis/round/round.model";
 import recordModel from '@apis/record/record.model';
-import { ICreateOneLoserByPlayerDto } from "./recordLoser/recordLoser.interface";
-import recordLoserModel from "./recordLoser/recordLoser.model";
-
 
 const { success, fail } = http;
 const logger = loggerFactory('Api record');
@@ -32,19 +29,13 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
         const recordDto: ICreateOneRecordDto = {
             ...body,
             winner: winner,
+            losers: loser,
             circle: currentRound.circle,
             dealer: currentRound.dealer,
             dealerCount: currentRound.dealerCount,
             round: round
         };
         const record = await recordModel.createOne(recordDto);
-        const recordLoser = loser.map(async player => {
-            const recordLoserDto: ICreateOneLoserByPlayerDto = {
-                player: player,
-                record: record
-            };
-            return await recordLoserModel.createLoserByPlayer(recordLoserDto);
-        });
         await nextDealer(recordDto, takeWind(round, winner.name));
         success(res, record);
     } catch (err) {

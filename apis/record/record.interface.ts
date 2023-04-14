@@ -1,6 +1,5 @@
 import { IPlayer } from "@apis/player/player.interface";
 import { IRound } from "@apis/round/round.interface";
-import { IRecordLoser } from "./recordLoser/recordLoser.interface";
 import { EWind, EEndType } from "./record.enum";
 
 //entity
@@ -16,9 +15,8 @@ export interface IRecord {
     point: number;
     //relation
     winner: IPlayer;
-    loser: IRecordLoser[];
+    losers: IPlayer[];
     round: IRound;
-    // updatedAt: Date;
 };
 
 //service
@@ -35,6 +33,7 @@ export interface IPostOne {
 //model
 export interface ICreateOneRecordDto {
     winner: IPlayer;
+    losers: IPlayer[];
     circle: EWind;
     dealer: EWind;
     dealerCount: number;

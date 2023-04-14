@@ -30,6 +30,9 @@ const readManyByRoundUid = async (roundUid: string): Promise<[IRecord[], number]
             round: {
                 uid: roundUid
             }
+        },
+        relations: {
+            losers: true
         }
     });
 };

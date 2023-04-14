@@ -17,13 +17,13 @@ const dbInit = async () => {
                 console.log(err);
                 throw err;
             });
-        await Postgres.runMigrations().
-            then((migration) => {
-                console.log('migration', migration);
-            }).catch(err => {
-                console.log(err);
-                throw err;
-            });
+        // await Postgres.runMigrations().
+        //     then((migration) => {
+        //         console.log('migration', migration);
+        //     }).catch(err => {
+        //         console.log(err);
+        //         throw err;
+        //     });
     } catch (err) {
         throw err;
     }

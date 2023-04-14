@@ -64,7 +64,6 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
 
 export const getLast = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        //TODO last record可能為空
         logger.debug('get last round');
         if (currentRound.roundUid) {
             logger.warn('currentRound', currentRound);

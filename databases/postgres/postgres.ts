@@ -8,7 +8,6 @@ import { Migration1681452210340 } from "./migrations/1681452210340-migration";
 import { postgresConfig } from '../../configs/config';
 import { Player } from '../../apis/player/player.entity';
 import { Record } from '../../apis/record/record.entity';
-import { RecordLoser } from '../../apis/record/recordLoser/recordLoser.entity';
 import { Round } from '../../apis/round/round.entity';
 
 export const Postgres = new DataSource({
@@ -22,7 +21,6 @@ export const Postgres = new DataSource({
         Player,
         Record,
         Round,
-        RecordLoser
     ],
     migrations: [Migration1681452210340],
     migrationsTableName: 'migrations',

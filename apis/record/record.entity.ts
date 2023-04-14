@@ -47,10 +47,16 @@ export const Record = new EntitySchema<IRecord>({
             joinColumn: { name: 'winnerId' },
             eager: true
         },
-        loser: {
+        losers: {
             target: 'player',
-            type: 'one-to-many',
-            inverseSide: 'record'
-        }
+            type: 'many-to-many',
+            joinTable: {
+                name: 'record_losers',
+                joinColumn: {
+                    name: 'recordUid'
+                }
+            },
+            cascade: true
+        },
     }
 });

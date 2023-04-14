@@ -27,12 +27,8 @@ export const Player = new EntitySchema<IPlayer>({
             joinColumn: { name: 'roundUid' }
         },
         winner: {
-            type: 'many-to-many',
+            type: 'one-to-many',
             target: 'record',
         },
-        loser: {
-            type: 'one-to-many',
-            target: 'recordLoser'
-        }
     }
 });
