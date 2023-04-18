@@ -20,9 +20,9 @@ export interface ICreateOnePlayerDto {
 };
 
 //service
-export interface IPlayerRecord {
-    rounds: number;
+export interface IPlayerRecords {
+    records: number;
     wins: number;
     loses: number;
-
+    selfDrawn: number;
 }

@@ -2,9 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 
 import { http, loggerFactory } from '@utils';
 import playerModel from './player.model';
-import { ICreateOnePlayerDto, IPlayerRecord } from './player.interface';
+import { ICreateOnePlayerDto, IPlayerRecords } from './player.interface';
 import { IRound, } from '@apis/round/round.interface';
-import { EWind, } from '@apis/record/record.enum';
+import { EEndType, EWind, } from '@apis/record/record.enum';
 import roundModel from '@apis/round/round.model';
 import recordModel from '@apis/record/record.model';
 import { IRecord } from '@apis/record';
@@ -38,48 +38,57 @@ export const getAll = async (req: Request, res: Response, next: NextFunction) =>
 
 export const getOneByName = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        //TODO post player/名字 要計算總局數、胡牌數、自摸數、放槍數及機率等等
         const { name } = req.params;
         logger.debug('get player by playerName');
         logger.warn(name);
-        const rounds = await roundModel.readManyByName(name);
+        const [rounds, roundCount] = await roundModel.readManyByName(name);
         logger.warn(rounds);
-        calculate(rounds, name);
-        const result: IPlayerRecord = {
-
+        const playerRecords = await calculate(rounds, name);
+        const result = {
+            rounds: roundCount,
+            ...playerRecords
         };
-        success(res, rounds);
+        success(res, result);
     } catch (err) {
         fail(res, err);
         next(err);
     };
 };
 
-const calculate = async (rounds: IRound[], name: string) => {
-
-    rounds.map(async (round, index) => {
-        let wins = 0;
-        const wind = takeWind(round, name);
-        const [records, recordsCount] = await recordModel.readManyByRoundUid(round.uid);
-        records.forEach(record => {
-            if (countWin(record.winner.name, name)) wins++;
-        });
-        console.log('wind', wind);
-        console.log('records', records);
-        console.log('recordsCount', recordsCount);
-        console.log('wins', wins);
-
-
-
-
-
-    });
-};
 
 export const takeWind = (round: IRound, name: string) => {
     return Object.entries(round).find(([key, value]) => value.name === name)[0];
 };
 
-const countWin = (winner: string, name: string) => {
-    return winner === name ? true : false;
+const calculate = async (rounds: IRound[], name: string) => {
+    const playerRecords: IPlayerRecords = {
+        records: 0,
+        wins: 0,
+        loses: 0,
+        selfDrawn: 0
+    };
+    const roundPromise = rounds.map(async round => {
+        const [records, recordCount] = await recordModel.readManyByRoundUid(round.uid);
+        playerRecords.records += recordCount;
+        const recordPromise = records.map(async record => {
+            if (await countWin(record, name)) playerRecords.wins++;
+            if (await countSelfDrawn(record, name)) playerRecords.selfDrawn++;
+            if (await countLose(record, name)) playerRecords.loses++;
+        });
+        await Promise.all(recordPromise);
+    });
+    await Promise.all(roundPromise);
+    return playerRecords;
+};
+
+const countWin = async (record: IRecord, name: string) => {
+    return record.endType === EEndType.WINNING && record.winner.name === name;
+};
+
+const countSelfDrawn = async (record: IRecord, name: string) => {
+    return record.endType === EEndType.SELF_DRAWN && record.winner.name === name;
+};
+
+const countLose = async (record: IRecord, name: string) => {
+    return record.losers.some(loser => loser.name === name);
 };

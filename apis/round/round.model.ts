@@ -48,7 +48,7 @@ const readLast = async () => {
 };
 
 const readManyByName = async (name: string) => {
-    return repo.find({
+    return repo.findAndCount({
         where: [
             { east: { name: name } },
             { south: { name: name } },

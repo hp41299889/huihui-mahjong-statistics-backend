@@ -23,6 +23,8 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
     try {
         const { roundUid } = req.params;
         const { body }: { body: IPostOne } = req;
+        console.log(body);
+
         const round = await roundModel.readOneByUid(roundUid);
         const winner = await playerModel.readOneByName(body.winner);
         const loser = await playerModel.readManyByNames(body.loser);
@@ -35,9 +37,9 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
             dealerCount: currentRound.dealerCount,
             round: round
         };
-        const record = await recordModel.createOne(recordDto);
+        // const record = await recordModel.createOne(recordDto);
         await nextDealer(recordDto, takeWind(round, winner.name));
-        success(res, record);
+        success(res, 'record');
     } catch (err) {
         next(err);
         fail(res, err);
