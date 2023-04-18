@@ -55,7 +55,10 @@ const readManyByName = async (name: string) => {
             { south: { name: name } },
             { west: { name: name } },
             { north: { name: name } }
-        ]
+        ],
+        relations: {
+            records: true
+        }
     });
 };
 
