@@ -43,12 +43,7 @@ export const getOneByName = async (req: Request, res: Response, next: NextFuncti
         logger.warn(name);
         const [rounds, roundCount] = await roundModel.readManyByName(name);
         logger.warn(rounds);
-        const playerRecords = await calculate(rounds, name);
-        const result = {
-            rounds: roundCount,
-            ...playerRecords
-        };
-        success(res, result);
+        success(res, rounds);
     } catch (err) {
         fail(res, err);
         next(err);

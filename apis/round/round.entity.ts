@@ -52,7 +52,9 @@ export const Round = new EntitySchema<IRound>({
         records: {
             target: 'record',
             type: 'one-to-many',
-            joinColumn: { name: 'roundUid' }
+            joinColumn: { name: 'recordUid' },
+            inverseSide: 'round',
+            // eager: true
         }
     }
 });

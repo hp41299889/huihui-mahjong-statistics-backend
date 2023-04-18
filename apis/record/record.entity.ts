@@ -39,7 +39,6 @@ export const Record = new EntitySchema<IRecord>({
         round: {
             target: 'round',
             type: 'many-to-one',
-            joinColumn: { name: 'roundUid' }
         },
         winner: {
             target: 'player',
@@ -56,6 +55,7 @@ export const Record = new EntitySchema<IRecord>({
                     name: 'recordUid'
                 }
             },
+            eager: true,
             cascade: true
         },
     }

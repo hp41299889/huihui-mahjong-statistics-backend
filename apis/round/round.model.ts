@@ -35,8 +35,9 @@ const readOneByUid = async (uid: string) => {
 const readLast = async () => {
     try {
         return repo.findOne({
-            where: {
-
+            where: {},
+            relations: {
+                records: true
             },
             order: {
                 createdAt: 'DESC'
