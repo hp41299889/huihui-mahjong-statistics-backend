@@ -52,24 +52,56 @@ export const getOneByName = async (req: Request, res: Response, next: NextFuncti
 };
 
 const calculate = async ([rounds, roundCount]: [IRound[], number], name: string) => {
-    const playerStatistics: IPlayerStatistics = {};
+    const playerStatistics: IPlayerStatistics = {
+        east: {
+            rounds: 0,
+            records: 0,
+            wins: 0,
+            loses: 0,
+            selfDrawns: 0,
+            draws: 0,
+            fakes: 0
+        },
+        south: {
+            rounds: 0,
+            records: 0,
+            wins: 0,
+            loses: 0,
+            selfDrawns: 0,
+            draws: 0,
+            fakes: 0
+        },
+        west: {
+            rounds: 0,
+            records: 0,
+            wins: 0,
+            loses: 0,
+            selfDrawns: 0,
+            draws: 0,
+            fakes: 0
+        },
+        north: {
+            rounds: 0,
+            records: 0,
+            wins: 0,
+            loses: 0,
+            selfDrawns: 0,
+            draws: 0,
+            fakes: 0
+        }
+    };
     const roundPromise = rounds.map(async round => {
-        console.log(round);
         const wind = takeWind(round, name);
-        console.log(wind);
-        console.log(playerStatistics[wind].wins = 0);
-
-
-        // const [records, recordCount] = await recordModel.readManyByRoundUid(round.uid);
-        // playerRecords.records += recordCount;
-        // const recordPromise = records.map(async record => {
-        //     if (await countWin(record, name)) playerRecords.wins++;
-        //     if (await countSelfDrawn(record, name)) playerRecords.selfDrawn++;
-        //     if (await countLose(record, name)) playerRecords.loses++;
-        // });
-        // await Promise.all(recordPromise);
+        playerStatistics[wind].rounds++;
+        playerStatistics[wind].records += round.records.length;
+        const recordPromise = round.records.map(async record => {
+            if (await countWin(record, name)) playerStatistics[wind].wins++;
+            if (await countSelfDrawn(record, name)) playerStatistics[wind].selfDrawns++;
+            if (await countLose(record, name)) playerStatistics[wind].loses++;
+        });
+        await Promise.all(recordPromise);
     });
-    // await Promise.all(roundPromise);
+    await Promise.all(roundPromise);
     return playerStatistics;
 };
 

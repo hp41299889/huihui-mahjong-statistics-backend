@@ -26,11 +26,15 @@ interface IStatistics {
     records: number;
     wins: number;
     loses: number;
-    selfDrawn: number;
-    draw: number;
-    fake: number;
+    selfDrawns: number;
+    draws: number;
+    fakes: number;
 };
 export interface IPlayerStatistics {
     [key: string]: IStatistics;
+    east: IStatistics;
+    south: IStatistics;
+    west: IStatistics;
+    north: IStatistics;
 };
 
