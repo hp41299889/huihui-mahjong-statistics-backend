@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 
 import { http, loggerFactory } from '@utils';
-import { currentRound, updateCurrentRound } from '@apis/round/round.service';
 import { EWind } from "./record.enum";
 import { IPostOne, ICreateOneRecordDto } from "./record.interface";
-import playerModel from "@apis/player/player.model";
-import roundModel from "@apis/round/round.model";
-import recordModel from '@apis/record/record.model';
+import recordModel from "./record.model";
+import { playerModel } from "@apis/player";
+import { roundModel, currentRound, updateCurrentRound } from "@apis/round";
 
 const { success, fail } = http;
 const logger = loggerFactory('Api record');

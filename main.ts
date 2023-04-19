@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import routes from '@apis/index';
-import { appConfig } from '@configs/config';
-import { Postgres } from '@postgres';
+import { routes } from '@apis/index';
+import { appConfig } from '@configs';
+import { Postgres } from '@databases';
 
 const app = express();
 app.use(express.json());
@@ -17,13 +17,6 @@ const dbInit = async () => {
                 console.log(err);
                 throw err;
             });
-        // await Postgres.runMigrations().
-        //     then((migration) => {
-        //         console.log('migration', migration);
-        //     }).catch(err => {
-        //         console.log(err);
-        //         throw err;
-        //     });
     } catch (err) {
         throw err;
     }

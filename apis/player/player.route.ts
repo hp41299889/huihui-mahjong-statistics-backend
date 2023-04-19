@@ -1,6 +1,10 @@
 import { Router } from "express";
 
-import { postOne, getOneByName, getAll } from "./player.service";
+import {
+    postOne,
+    getOneByName,
+    getAll
+} from "./player.service";
 
 const router = Router();
 

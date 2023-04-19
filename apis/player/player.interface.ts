@@ -1,5 +1,4 @@
-import { EWind, IRecord } from '@apis/record';
-import { IRound } from '@apis/round/round.interface';
+import { IRound } from '@apis/round';
 
 //entity
 export interface IPlayer {
@@ -11,7 +10,6 @@ export interface IPlayer {
     //relation
     rounds: IRound[];
     winner: IPlayer;
-    // records: IRecord[];
 };
 
 //model
@@ -20,7 +18,6 @@ export interface ICreateOnePlayerDto {
 };
 
 //service
-
 interface IStatistics {
     rounds: number;
     records: number;
@@ -30,6 +27,7 @@ interface IStatistics {
     draws: number;
     fakes: number;
 };
+
 export interface IPlayerStatistics {
     [key: string]: IStatistics;
     east: IStatistics;

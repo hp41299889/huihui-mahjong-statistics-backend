@@ -6,14 +6,19 @@ import recordRouter from "./record.route";
 import { windList } from "./record.service";
 
 export {
+    //entity
     Record,
+    //model
+    recordModel,
+    //enum
     EEndType,
     EWind,
+    //interface
     IRecord,
     ICreateOneRecordDto,
     IPostOne,
-    recordModel,
+    //router
+    recordRouter,
+    //orther
     windList
 };
-
-export default recordRouter;

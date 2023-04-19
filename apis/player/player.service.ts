@@ -3,11 +3,8 @@ import { Request, Response, NextFunction } from 'express';
 import { http, loggerFactory } from '@utils';
 import playerModel from './player.model';
 import { ICreateOnePlayerDto, IPlayerStatistics } from './player.interface';
-import { IRound, } from '@apis/round/round.interface';
-import { EEndType, EWind, } from '@apis/record/record.enum';
-import roundModel from '@apis/round/round.model';
-import recordModel from '@apis/record/record.model';
-import { IRecord } from '@apis/record';
+import { roundModel, IRound } from '@apis/round';
+import { IRecord, EEndType } from '@apis/record';
 
 const logger = loggerFactory('Api player');
 const { success, fail } = http;

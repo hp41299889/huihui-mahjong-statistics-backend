@@ -1,19 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 
-import { EDeskType } from "./round.enum";
 import { http, loggerFactory } from '@utils';
+import { EDeskType } from "./round.enum";
 import roundModel from "./round.model";
-import { IRecord } from '@apis/record/record.interface';
-import { windList } from "@apis/record/record.service";
-import { EEndType, EWind } from "@apis/record/record.enum";
 import { ICurrentRound, IPostOne, ICreateOneRoundDto, IRound } from "./round.interface";
-import { IPlayer } from "@apis/player/player.interface";
-import playerModel from "@apis/player/player.model";
+import { IRecord, windList, EEndType, EWind } from '@apis/record';
+import { playerModel, IPlayer } from "@apis/player";
 
 const logger = loggerFactory('Api round');
 const { success, fail } = http;
 
-//currentRound計算有誤，server重啟後會多算一局
 export const currentRound: ICurrentRound = {
     roundUid: '',
     deskType: EDeskType.AUTO,

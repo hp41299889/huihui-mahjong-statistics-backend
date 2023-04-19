@@ -1,6 +1,6 @@
 import { In } from 'typeorm';
 
-import { Postgres } from '@postgres';
+import { Postgres } from '@databases';
 import { loggerFactory } from '@utils';
 import { Player } from './player.entity';
 import { ICreateOnePlayerDto } from './player.interface';
@@ -10,8 +10,7 @@ const repo = Postgres.getRepository(Player);
 
 const createOne = (dto: ICreateOnePlayerDto) => {
     try {
-        logger.debug('create one player', dto);
-        logger.warn(dto);
+        logger.debug('create one player');
         return repo.save(dto);
     } catch (err) {
         throw err;
@@ -20,6 +19,7 @@ const createOne = (dto: ICreateOnePlayerDto) => {
 
 const readAll = () => {
     try {
+        logger.debug('read all players');
         return repo.find();
     } catch (err) {
         throw err;
@@ -28,6 +28,7 @@ const readAll = () => {
 
 const readOneByName = async (name: string) => {
     try {
+        logger.debug('read one by name');
         return await repo.findOneBy({
             name: name
         });
@@ -38,6 +39,7 @@ const readOneByName = async (name: string) => {
 
 const readManyByNames = async (name: string[]) => {
     try {
+        logger.debug('read many by many names');
         return repo.find({
             where: {
                 name: In(name)

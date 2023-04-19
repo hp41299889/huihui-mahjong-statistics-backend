@@ -5,11 +5,11 @@
       "@utils": [
         "./utils/index"
       ],
-      "@configs/*": [
-        "./configs/*"
+      "@configs": [
+        "./configs/config"
       ],
-      "@postgres": [
-        "./databases/postgres/postgres"
+      "@databases": [
+        "./databases/index"
       ],
       "@apis/*": [
         "./apis/*"

@@ -1,5 +1,5 @@
-import { IPlayer } from "@apis/player/player.interface";
-import { IRound } from "@apis/round/round.interface";
+import { IPlayer } from "@apis/player";
+import { IRound } from "@apis/round";
 import { EWind, EEndType } from "./record.enum";
 
 //entity

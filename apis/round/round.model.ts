@@ -1,4 +1,4 @@
-import { Postgres } from '@postgres';
+import { Postgres } from '@databases';
 import { loggerFactory } from '@utils';
 import { Round } from './round.entity';
 import { ICreateOneRoundDto } from './round.interface';

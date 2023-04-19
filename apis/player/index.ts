@@ -4,10 +4,13 @@ import playerRouter from './player.route';
 import { IPlayer, ICreateOnePlayerDto } from "./player.interface";
 
 export {
+    //entity
     Player,
+    //model
+    playerModel,
+    //interface
     ICreateOnePlayerDto,
     IPlayer,
-    playerModel,
+    //router
+    playerRouter
 };
-
-export default playerRouter;

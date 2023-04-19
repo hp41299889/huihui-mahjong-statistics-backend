@@ -1,6 +1,5 @@
-import { IPlayer } from '@apis/player/player.interface';
-import { IRecord } from '@apis/record/record.interface';
-import { EWind } from '@apis/record/record.enum';
+import { IPlayer } from '@apis/player';
+import { IRecord, EWind } from '@apis/record';
 import { EDeskType } from "./round.enum";
 //entity
 export interface IRound {

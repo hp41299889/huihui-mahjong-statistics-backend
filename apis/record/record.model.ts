@@ -1,5 +1,5 @@
 import { loggerFactory } from '@utils';
-import { Postgres } from '@postgres';
+import { Postgres } from '@databases';
 import { Record } from './record.entity';
 import { ICreateOneRecordDto, IRecord } from './record.interface';
 
