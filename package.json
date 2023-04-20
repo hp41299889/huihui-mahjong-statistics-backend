@@ -1,8 +1,8 @@
 {
   "name": "huihui-mahjong-statistics-backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
-  "main": "index.ts",
+  "main": "main.ts",
   "scripts": {
     "start": "node ./build/main.js",
     "build": "rm -rf build && tsc && tscpaths -p tsconfig.json -s ./",
