@@ -5,4 +5,3 @@ COPY package.json ./
 COPY yarn.lock ./
 RUN [ "yarn" ]
 EXPOSE 8000
-ENTRYPOINT [ "yarn", "start" ]

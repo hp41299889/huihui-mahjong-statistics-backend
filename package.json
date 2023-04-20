@@ -11,9 +11,9 @@
     "migrate:generate": "yarn typeorm migration:generate ./databases/postgres/migrations/migration -d ./databases/postgres/postgres.ts",
     "migrate:run": "yarn typeorm migration:run -d ./build/databases/postgres/postgres.js",
     "migrate:revert": "yarn typeorm migration:revert -d ./build/databases/postgres/postgres.js",
-    "docker:build": "npm run build && docker build -t hp4129889/huihui-mahjong:backend .",
+    "docker:build": "yarn build && docker build -t hp4129889/huihui-mahjong:backend .",
     "docker:push": "docker push hp4129889/huihui-mahjong:backend",
-    "dockerhub": "npm run build && npm run docker:build && npm run docker:push",
+    "dockerhub": "yarn build && npm run docker:build && npm run docker:push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
