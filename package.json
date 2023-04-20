@@ -2,18 +2,18 @@
   "name": "huihui-mahjong-statistics-backend",
   "version": "1.1.0",
   "description": "",
-  "main": "index.ts",
+  "main": "main.ts",
   "scripts": {
-    "start": "node ./build/index.js",
-    "build": "tsc",
-    "dev": "nodemon index.ts",
-    "typeorm": "typeorm-ts-node-commonjs -d ./databases/postgres.ts",
-    "migration:generate": "npm run typeorm migration:generate ./databases/migrations/migration",
-    "migration:run": "npm run typeorm migration:run",
-    "migration:revert": "npm run typeorm migration:revert",
-    "docker:build": "npm run build && docker build -t hp4129889/huihui-mahjong:backend .",
+    "start": "node ./build/main.js",
+    "build": "rm -rf build && tsc && tscpaths -p tsconfig.json -s ./",
+    "dev": "nodemon -r tsconfig-paths/register main.ts",
+    "typeorm": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "migrate:generate": "yarn typeorm migration:generate ./databases/postgres/migrations/migration -d ./databases/postgres/postgres.ts",
+    "migrate:run": "yarn typeorm migration:run -d ./build/databases/postgres/postgres.js",
+    "migrate:revert": "yarn typeorm migration:revert -d ./build/databases/postgres/postgres.js",
+    "docker:build": "yarn build && docker build -t hp4129889/huihui-mahjong:backend .",
     "docker:push": "docker push hp4129889/huihui-mahjong:backend",
-    "dockerhub": "npm run build && npm run docker:build && npm run docker:push",
+    "dockerhub": "yarn build && npm run docker:build && npm run docker:push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -24,7 +24,7 @@
     "express": "^4.18.2",
     "lodash": "^4.17.21",
     "pg": "^8.10.0",
-    "typeorm": "^0.3.12",
+    "typeorm": "^0.3.15",
     "winston": "^3.8.2"
   },
   "devDependencies": {
@@ -33,6 +33,9 @@
     "@types/lodash": "^4.14.191",
     "nodemon": "^2.0.21",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
-  }
+    "tsconfig-paths": "^4.2.0",
+    "tscpaths": "^0.0.9",
+    "typescript": "^5.0.4"
+  },
+  "packageManager": "yarn@3.5.0"
 }

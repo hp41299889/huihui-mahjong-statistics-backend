@@ -1,15 +1,18 @@
 import { Router } from "express";
 
 import {
-    createPlayer,
-    getPlayers
-} from './player';
-
+    postOne,
+    getOneByName,
+    getAll
+} from "./player.service";
 
 const router = Router();
 
+router.route('/:name')
+    .get(getOneByName);
+
 router.route('/')
-    .post(createPlayer)
-    .get(getPlayers);
+    .post(postOne)
+    .get(getAll);
 
 export default router;

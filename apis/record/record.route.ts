@@ -1,17 +1,16 @@
 import { Router } from "express";
 
 import {
-    createRecord,
-    getRecords
-} from './record';
+    postOne
+} from './record.service';
 
 
 const router = Router();
 
 router.route('/')
-    .get(getRecords);
+// .get(getRecords);
 
 router.route('/:roundUid')
-    .post(createRecord)
+    .post(postOne)
 
 export default router;

@@ -2,16 +2,12 @@ import 'dotenv/config';
 
 const { env } = process;
 
-export {
-    appConfig,
-    postgresConfig
+export const appConfig = {
+    port: env.APP_PORT,
+    prefix: env.APP_API_PREFIX
 };
 
-const appConfig = {
-    port: env.APP_PORT
-};
-
-const postgresConfig = {
+export const postgresConfig = {
     username: env.HUIHUI_POSTGRES_USER,
     password: env.HUIHUI_POSTGRES_PASSWORD,
     host: env.HUIHUI_POSTGRES_HOST,
