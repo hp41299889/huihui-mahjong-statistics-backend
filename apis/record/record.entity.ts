@@ -27,7 +27,8 @@ export const Record = new EntitySchema<IRecord>({
             enum: EEndType
         },
         point: {
-            type: Number
+            type: Number,
+            nullable: true
         },
         createdAt: {
             name: 'created_at',
@@ -44,6 +45,7 @@ export const Record = new EntitySchema<IRecord>({
             target: 'player',
             type: 'many-to-one',
             joinColumn: { name: 'winnerId' },
+            nullable: true,
             eager: true
         },
         losers: {
@@ -55,6 +57,7 @@ export const Record = new EntitySchema<IRecord>({
                     name: 'recordUid'
                 }
             },
+            nullable: true,
             eager: true,
             cascade: true
         },

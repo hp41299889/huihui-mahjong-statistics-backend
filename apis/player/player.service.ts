@@ -92,9 +92,9 @@ const calculate = async ([rounds, roundCount]: [IRound[], number], name: string)
         playerStatistics[wind].rounds++;
         playerStatistics[wind].records += round.records.length;
         const recordPromise = round.records.map(async record => {
-            if (await countWin(record, name)) playerStatistics[wind].wins++;
-            if (await countSelfDrawn(record, name)) playerStatistics[wind].selfDrawns++;
-            if (await countLose(record, name)) playerStatistics[wind].loses++;
+            if (await isWin(record, name)) playerStatistics[wind].wins++;
+            if (await isSelfDrawn(record, name)) playerStatistics[wind].selfDrawns++;
+            if (await isLose(record, name)) playerStatistics[wind].loses++;
         });
         await Promise.all(recordPromise);
     });
@@ -102,18 +102,18 @@ const calculate = async ([rounds, roundCount]: [IRound[], number], name: string)
     return playerStatistics;
 };
 
-const takeWind = (round: IRound, name: string) => {
+export const takeWind = (round: IRound, name: string) => {
     return Object.entries(round).find(([key, value]) => value.name === name)[0];
 };
 
-const countWin = async (record: IRecord, name: string) => {
+const isWin = async (record: IRecord, name: string) => {
     return record.endType === EEndType.WINNING && record.winner.name === name;
 };
 
-const countSelfDrawn = async (record: IRecord, name: string) => {
+const isSelfDrawn = async (record: IRecord, name: string) => {
     return record.endType === EEndType.SELF_DRAWN && record.winner.name === name;
 };
 
-const countLose = async (record: IRecord, name: string) => {
+const isLose = async (record: IRecord, name: string) => {
     return record.losers.some(loser => loser.name === name);
 };

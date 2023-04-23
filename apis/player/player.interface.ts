@@ -7,6 +7,13 @@ export interface IPlayer {
     createdAt: Date;
     //column
     name: string;
+    win: number;
+    lose: number;
+    selfDrawn: number;
+    beSelfDrawn: number;
+    draw: number;
+    fake: number;
+    amount: number;
     //relation
     rounds: IRound[];
     winner: IPlayer;

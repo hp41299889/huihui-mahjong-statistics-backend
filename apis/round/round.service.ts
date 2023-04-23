@@ -148,18 +148,6 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
     };
 };
 
-const isCurrentRoundExist = (currentRound: ICurrentRound): boolean => {
-    try {
-        if (currentRound.roundUid) {
-            return true;
-        } else {
-            return false;
-        };
-    } catch (err) {
-        throw err;
-    };
-};
-
 //TODO 目前只能取出round關聯所有的record，自行取出最新record
 const takeLastRecord = async (round: IRound) => {
     return round.records[round.records.length - 1];
@@ -211,7 +199,7 @@ const isDealerContinue = async (record: IRecord) => {
 };
 
 const isDealerWin = async (record: IRecord) => {
-    return currentRound.players[record.dealer].id === record.winner.id;
+    return record.winner ? currentRound.players[record.dealer].id === record.winner.id : false;
 };
 
 const isDraw = async (record: IRecord) => {

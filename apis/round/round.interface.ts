@@ -25,6 +25,7 @@ export interface ICurrentRound {
     base: number;
     point: number;
     players: {
+        [key: string]: IPlayer;
         east: IPlayer
         south: IPlayer
         west: IPlayer
