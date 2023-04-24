@@ -36,8 +36,9 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
             dealerCount: currentRound.dealerCount,
         };
         const record = await recordModel.createOne(recordDto);
-        await updateCurrentRound(record);
+        currentRound.records++;
         await playerCounter(record);
+        await updateCurrentRound(record);
         success(res, record);
     } catch (err) {
         next(err);
@@ -62,6 +63,8 @@ const takeWind = (round: IRound, name: string) => {
 };
 
 const playerCounter = async (record: IRecord) => {
+    console.log('***************', record.point);
+
     if (record.endType === EEndType.WINNING) {
         const winWind = takeWind(record.round, record.winner.name);
         const loseWind = takeWind(record.round, record.losers[0].name);
@@ -83,6 +86,7 @@ const playerCounter = async (record: IRecord) => {
         });
     };
     if (record.endType === EEndType.DRAW) {
+        currentRound.draws++;
         currentRound.players['east'].draw++;
         currentRound.players['south'].draw++;
         currentRound.players['west'].draw++;
@@ -90,22 +94,33 @@ const playerCounter = async (record: IRecord) => {
     };
 };
 
-const isDealer = (wind: string, record: IRecord) => {
-    return wind === record.dealer;
+const isDealer = (winWind: string, loseWind: string, record: IRecord) => {
+    return winWind === record.dealer || loseWind === record.dealer;
 };
 
 const calculateWinAmount = (winWind: string, record: IRecord) => {
-    if (isDealer(winWind, record)) {
-        const point = record.point * currentRound.dealerCount * 2 + 1;
-        currentRound.players[winWind].amount += (currentRound.base + currentRound.point * point);
+    if (isDealer(winWind, '', record)) {
+        // console.log(' record.point', record.point);
+        // console.log(' currentRound.dealerCount', currentRound.dealerCount);
+
+        const points = record.point + currentRound.dealerCount * 2 + 1;
+        // console.log('******winning');
+        // console.log('currentRound.base', currentRound.base);
+        // console.log('currentRound.point', currentRound.point);
+        // console.log('points', points);
+
+
+        // console.log(currentRound.base + currentRound.point * points);
+
+        currentRound.players[winWind].amount += (currentRound.base + currentRound.point * points);
     } else {
         currentRound.players[winWind].amount += (currentRound.base + currentRound.point * record.point);
     };
 };
 
 const calculateLoseAmount = (loseWind: string, record: IRecord) => {
-    if (isDealer(loseWind, record)) {
-        const point = record.point * currentRound.dealerCount * 2 + 1;
+    if (isDealer('', loseWind, record)) {
+        const point = record.point + currentRound.dealerCount * 2 + 1;
         currentRound.players[loseWind].amount -= (currentRound.base + currentRound.point * point);
     } else {
         currentRound.players[loseWind].amount -= (currentRound.base + currentRound.point * record.point);

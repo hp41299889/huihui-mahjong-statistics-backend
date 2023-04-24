@@ -24,6 +24,8 @@ export const currentRound: ICurrentRound = {
     circle: EWind.EAST,
     dealer: EWind.EAST,
     dealerCount: 0,
+    records: 0,
+    draws: 0
 };
 
 export const postOne = async (req: Request, res: Response, next: NextFunction) => {
@@ -67,7 +69,7 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
         if (currentRound.roundUid) {
             //currentRound有存資料，直接回傳
             logger.debug('currentRound有存資料，直接回傳');
-            logger.warn(currentRound);
+            // logger.warn(currentRound);
             success(res, currentRound);
         } else {
             //currentRound沒有資料，讀取DB
