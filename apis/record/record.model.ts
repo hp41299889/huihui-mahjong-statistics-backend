@@ -54,15 +54,24 @@ const readLastByRoundUid = async (roundUid: string) => {
     };
 };
 
-const readManyByPlayerName = async (name: string) => {
-    return await repo.findAndCountBy({
-
-    })
+const deleteLastByRoundUid = async (roundUid: string) => {
+    const last = await repo.findOne({
+        where: {
+            round: {
+                uid: roundUid
+            }
+        },
+        order: {
+            createdAt: 'DESC'
+        }
+    });
+    return await repo.remove(last);
 };
 
 export default {
     createOne,
     readAll,
     readLastByRoundUid,
-    readManyByRoundUid
-}
+    readManyByRoundUid,
+    deleteLastByRoundUid
+};

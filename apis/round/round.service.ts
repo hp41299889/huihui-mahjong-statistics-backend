@@ -102,18 +102,7 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
                     logger.debug('若有record，判斷這個record是否是一將的最後一局');
                     if (await isLastRecord(lastRecord, round.north)) {
                         logger.debug('最後一局，清空currentRound');
-                        currentRound.roundUid = '';
-                        currentRound.base = 0;
-                        currentRound.point = 0;
-                        currentRound.dealer = EWind.EAST;
-                        currentRound.dealerCount = 0;
-                        currentRound.deskType = EDeskType.AUTO;
-                        currentRound.players = {
-                            east: null,
-                            south: null,
-                            west: null,
-                            north: null
-                        };
+                        await resetCurrentRound();
                         logger.warn('currentRound');
                         logger.warn(currentRound);
                         success(res, currentRound);
@@ -155,6 +144,21 @@ const takeLastRecord = async (round: IRound) => {
 
 const isLastRecord = async (record: IRecord, north: IPlayer) => {
     return (record.circle === EWind.NORTH && record.dealer === EWind.NORTH && record.winner !== north);
+};
+
+export const resetCurrentRound = async () => {
+    currentRound.roundUid = '';
+    currentRound.base = 0;
+    currentRound.point = 0;
+    currentRound.dealer = EWind.EAST;
+    currentRound.dealerCount = 0;
+    currentRound.deskType = EDeskType.AUTO;
+    currentRound.players = {
+        east: null,
+        south: null,
+        west: null,
+        north: null
+    };
 };
 
 export const updateCurrentRound = async (record: IRecord) => {
