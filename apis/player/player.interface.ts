@@ -19,11 +19,6 @@ export interface IPlayer {
     winner: IPlayer;
 };
 
-//model
-export interface ICreateOnePlayerDto {
-    name: string;
-};
-
 //service
 interface IStatistics {
     rounds: number;
@@ -43,3 +38,16 @@ export interface IPlayerStatistics {
     north: IStatistics;
 };
 
+//model
+export interface ICreateOnePlayerDto {
+    name: string;
+};
+
+export interface IUpdateOnePlayerDto {
+    win: number;
+    lose: number;
+    beSelfDrawn: number;
+    draw: number;
+    fake: number;
+    amount: number;
+};

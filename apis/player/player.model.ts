@@ -3,7 +3,7 @@ import { In } from 'typeorm';
 import { Postgres } from '@databases';
 import { loggerFactory } from '@utils';
 import { Player } from './player.entity';
-import { ICreateOnePlayerDto } from './player.interface';
+import { ICreateOnePlayerDto, IUpdateOnePlayerDto } from './player.interface';
 
 const logger = loggerFactory('Model player');
 const repo = Postgres.getRepository(Player);
@@ -47,12 +47,26 @@ const readManyByNames = async (name: string[]) => {
         })
     } catch (err) {
         throw err;
-    }
+    };
+};
+
+const updateOneByName = async (name: string, data: IUpdateOnePlayerDto) => {
+    const player = await repo.findOneBy({ name: name });
+    if (player) {
+        player.win = data.win;
+        player.lose = data.lose;
+        player.beSelfDrawn = data.beSelfDrawn;
+        player.draw = data.draw;
+        player.fake = data.fake;
+        player.amount = data.amount;
+    };
+    await repo.save(player);
 };
 
 export default {
     createOne,
     readAll,
     readOneByName,
-    readManyByNames
+    readManyByNames,
+    updateOneByName
 };

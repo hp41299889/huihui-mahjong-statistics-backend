@@ -6,6 +6,8 @@ import roundModel from "./round.model";
 import { ICurrentRound, IPostOne, ICreateOneRoundDto, IRound } from "./round.interface";
 import { IRecord, windList, EEndType, EWind } from '@apis/record';
 import { playerModel, IPlayer } from "@apis/player";
+import { playerCounter } from "@apis/record/record.service";
+import { IUpdateOnePlayerDto } from "@apis/player/player.interface";
 
 const logger = loggerFactory('Api round');
 const { success, fail } = http;
@@ -24,8 +26,9 @@ export const currentRound: ICurrentRound = {
     circle: EWind.EAST,
     dealer: EWind.EAST,
     dealerCount: 0,
-    records: 0,
-    draws: 0
+    recordCount: 0,
+    drawCount: 0,
+    fakeCount: 0
 };
 
 export const postOne = async (req: Request, res: Response, next: NextFunction) => {
@@ -126,6 +129,7 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
                         currentRound.dealerCount = lastRecord.dealerCount;
                         //到目前為止currentRound是等同DB，接下來用風圈、風局、是否連莊判斷有沒有進入下一局
                         await updateCurrentRound(lastRecord);
+                        await calculateStatus(round);
                         logger.warn(currentRound);
                         success(res, currentRound);
                     };
@@ -163,6 +167,15 @@ export const resetCurrentRound = async () => {
     };
 };
 
+const calculateStatus = async (round: IRound) => {
+    currentRound.recordCount = round.records.length;
+    currentRound.drawCount = round.records.filter(record => record.endType === EEndType.DRAW).length;
+    currentRound.fakeCount = round.records.filter(record => record.endType === EEndType.FAKE).length;
+    round.records.forEach(async (record, index) => {
+        await playerCounter(round, record);
+    });
+};
+
 export const updateCurrentRound = async (record: IRecord) => {
     //若連莊判斷發生，連莊數+1，風圈風局不變
     if (await isDealerContinue(record)) {
@@ -188,6 +201,12 @@ export const updateCurrentRound = async (record: IRecord) => {
                 currentRound.circle = EWind.EAST;
                 currentRound.dealer = EWind.EAST;
                 currentRound.dealerCount = 0;
+                //TODO 一將結束後把player紀錄寫回player
+                Object.entries(currentRound.players).forEach((player, index) => {
+                    // const data:IUpdateOnePlayerDto = {
+                    //     win: currentRound.players[]
+                    // }
+                });
             } else {
                 //若非北風的北風局，更新currentRound下一圈，風局改為east
                 currentRound.circle = windList[windList.indexOf(currentRound.circle) + 1];

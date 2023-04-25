@@ -36,8 +36,8 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
             dealerCount: currentRound.dealerCount,
         };
         const record = await recordModel.createOne(recordDto);
-        currentRound.records++;
-        await playerCounter(record);
+        currentRound.recordCount++;
+        await playerCounter(round, record);
         await updateCurrentRound(record);
         success(res, record);
     } catch (err) {
@@ -62,31 +62,27 @@ const takeWind = (round: IRound, name: string) => {
     return Object.entries(round).find(([key, value]) => value.name === name)[0];
 };
 
-const playerCounter = async (record: IRecord) => {
-    console.log('***************', record.point);
-
+export const playerCounter = async (round: IRound, record: IRecord) => {
     if (record.endType === EEndType.WINNING) {
-        const winWind = takeWind(record.round, record.winner.name);
-        const loseWind = takeWind(record.round, record.losers[0].name);
+        const winWind = takeWind(round, record.winner.name);
+        const loseWind = takeWind(round, record.losers[0].name);
         currentRound.players[winWind].win++;
         currentRound.players[loseWind].lose++;
-        calculateWinAmount(winWind, record);
-        calculateLoseAmount(loseWind, record);
+        calculateAmount(winWind, loseWind, record);
     };
     if (record.endType === EEndType.SELF_DRAWN) {
-        const winWind = takeWind(record.round, record.winner.name);
+        const winWind = takeWind(round, record.winner.name);
         const loseWinds = record.losers.map((loser, index) => {
-            return takeWind(record.round, loser.name);
+            return takeWind(round, loser.name);
         });
         currentRound.players[winWind].selfDrawn++;
-        calculateWinAmount(winWind, record);
-        loseWinds.forEach(wind => {
-            currentRound.players[wind].beSelfDrawn++;
-            calculateLoseAmount(wind, record);
+        loseWinds.forEach(loseWind => {
+            currentRound.players[loseWind].beSelfDrawn++;
+            calculateAmount(winWind, loseWind, record);
         });
     };
     if (record.endType === EEndType.DRAW) {
-        currentRound.draws++;
+        currentRound.drawCount++;
         currentRound.players['east'].draw++;
         currentRound.players['south'].draw++;
         currentRound.players['west'].draw++;
@@ -98,31 +94,13 @@ const isDealer = (winWind: string, loseWind: string, record: IRecord) => {
     return winWind === record.dealer || loseWind === record.dealer;
 };
 
-const calculateWinAmount = (winWind: string, record: IRecord) => {
-    if (isDealer(winWind, '', record)) {
-        // console.log(' record.point', record.point);
-        // console.log(' currentRound.dealerCount', currentRound.dealerCount);
-
+const calculateAmount = (winWind: string, loseWind: string, record: IRecord) => {
+    if (isDealer(winWind, loseWind, record)) {
         const points = record.point + currentRound.dealerCount * 2 + 1;
-        // console.log('******winning');
-        // console.log('currentRound.base', currentRound.base);
-        // console.log('currentRound.point', currentRound.point);
-        // console.log('points', points);
-
-
-        // console.log(currentRound.base + currentRound.point * points);
-
         currentRound.players[winWind].amount += (currentRound.base + currentRound.point * points);
+        currentRound.players[loseWind].amount -= (currentRound.base + currentRound.point * points);
     } else {
         currentRound.players[winWind].amount += (currentRound.base + currentRound.point * record.point);
-    };
-};
-
-const calculateLoseAmount = (loseWind: string, record: IRecord) => {
-    if (isDealer('', loseWind, record)) {
-        const point = record.point + currentRound.dealerCount * 2 + 1;
-        currentRound.players[loseWind].amount -= (currentRound.base + currentRound.point * point);
-    } else {
         currentRound.players[loseWind].amount -= (currentRound.base + currentRound.point * record.point);
     };
 };

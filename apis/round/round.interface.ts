@@ -34,8 +34,9 @@ export interface ICurrentRound {
     circle: EWind;
     dealer: EWind;
     dealerCount: number;
-    records: number;
-    draws: number;
+    recordCount: number;
+    drawCount: number;
+    fakeCount: number;
 };
 
 //service
