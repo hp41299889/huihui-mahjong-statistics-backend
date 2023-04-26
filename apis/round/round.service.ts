@@ -72,7 +72,6 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
         if (currentRound.roundUid) {
             //currentRound有存資料，直接回傳
             logger.debug('currentRound有存資料，直接回傳');
-            // logger.warn(currentRound);
             success(res, currentRound);
         } else {
             //currentRound沒有資料，讀取DB
@@ -84,22 +83,12 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
                 success(res, 'no round');
             } else {
                 //讀取DB最新一筆round
-                logger.debug('讀取DB最新一筆round');
+                logger.debug('讀取DB最新一筆record');
+                await synchronizeRound(round);
                 const lastRecord = await takeLastRecord(round);
                 //若沒有record，把currentRound更新成roundModel.readLast()
                 if (!lastRecord) {
                     logger.debug('沒有record，把currentRound更新成roundModel.readLast()');
-                    currentRound.roundUid = round.uid;
-                    currentRound.base = round.base;
-                    currentRound.point = round.point;
-                    currentRound.deskType = round.deskType;
-                    currentRound.players = {
-                        east: round.east,
-                        south: round.south,
-                        west: round.west,
-                        north: round.north
-                    };
-                    logger.warn(currentRound);
                     success(res, currentRound);
                 } else {
                     //若有record，判斷這個record是否是一將的最後一局
@@ -109,28 +98,16 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
                         logger.debug('最後一局，清空currentRound');
                         await resetCurrentRound();
                         logger.warn('currentRound');
-                        logger.warn(currentRound);
                         success(res, currentRound);
                     } else {
                         //若不是最後一局，更新currentRound
-                        logger.debug('最後一局，更新currentRound');
-                        currentRound.roundUid = round.uid;
-                        currentRound.base = round.base;
-                        currentRound.point = round.point;
-                        currentRound.deskType = round.deskType;
-                        currentRound.players = {
-                            east: round.east,
-                            south: round.south,
-                            west: round.west,
-                            north: round.north
-                        };
+                        logger.debug('不是最後一局，更新currentRound');
                         currentRound.circle = lastRecord.circle;
                         currentRound.dealer = lastRecord.dealer;
                         currentRound.dealerCount = lastRecord.dealerCount;
                         //到目前為止currentRound是等同DB，接下來用風圈、風局、是否連莊判斷有沒有進入下一局
-                        await updateCurrentRound(lastRecord);
                         await calculateStatus(round);
-                        logger.warn(currentRound);
+                        await updateCurrentRound(lastRecord);
                         success(res, currentRound);
                     };
                 };
@@ -140,6 +117,19 @@ export const getLast = async (req: Request, res: Response, next: NextFunction) =
     } catch (err) {
         next(err);
         fail(res, err);
+    };
+};
+
+const synchronizeRound = async (round: IRound) => {
+    currentRound.roundUid = round.uid;
+    currentRound.base = round.base;
+    currentRound.point = round.point;
+    currentRound.deskType = round.deskType;
+    currentRound.players = {
+        east: round.east,
+        south: round.south,
+        west: round.west,
+        north: round.north
     };
 };
 
@@ -165,15 +155,16 @@ export const resetCurrentRound = async () => {
         west: null,
         north: null
     };
+    currentRound.recordCount = 0;
+    currentRound.drawCount = 0;
+    currentRound.fakeCount = 0;
 };
 
 const calculateStatus = async (round: IRound) => {
-    currentRound.recordCount = round.records.length;
-    currentRound.drawCount = round.records.filter(record => record.endType === EEndType.DRAW).length;
-    currentRound.fakeCount = round.records.filter(record => record.endType === EEndType.FAKE).length;
-    round.records.forEach(async (record, index) => {
+    const calculatePromise = round.records.map(async (record, index) => {
         await playerCounter(round, record);
     });
+    await Promise.all(calculatePromise);
 };
 
 export const updateCurrentRound = async (record: IRecord) => {
@@ -188,25 +179,20 @@ export const updateCurrentRound = async (record: IRecord) => {
             //若是北風圈，
             if (record.circle === EWind.NORTH) {
                 //北風北且沒有連莊，代表這將結束，重置currentRound
-                currentRound.roundUid = '';
-                currentRound.base = 0;
-                currentRound.point = 0;
-                currentRound.deskType = EDeskType.AUTO;
-                currentRound.players = {
-                    east: null,
-                    south: null,
-                    west: null,
-                    north: null
-                };
-                currentRound.circle = EWind.EAST;
-                currentRound.dealer = EWind.EAST;
-                currentRound.dealerCount = 0;
-                //TODO 一將結束後把player紀錄寫回player
-                Object.entries(currentRound.players).forEach((player, index) => {
-                    // const data:IUpdateOnePlayerDto = {
-                    //     win: currentRound.players[]
-                    // }
+                const updatePromise = Object.entries(currentRound.players).map(async (player, index) => {
+                    const data: IUpdateOnePlayerDto = {
+                        win: player[1].win,
+                        lose: player[1].lose,
+                        beSelfDrawn: player[1].beSelfDrawn,
+                        draw: player[1].draw,
+                        fake: player[1].fake,
+                        amount: player[1].amount
+                    };
+                    console.log(player);
+                    await playerModel.updateOneByName(player[1].name, data);
                 });
+                await Promise.all(updatePromise);
+                await resetCurrentRound();
             } else {
                 //若非北風的北風局，更新currentRound下一圈，風局改為east
                 currentRound.circle = windList[windList.indexOf(currentRound.circle) + 1];

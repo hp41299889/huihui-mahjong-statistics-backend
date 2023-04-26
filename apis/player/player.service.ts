@@ -37,9 +37,7 @@ export const getOneByName = async (req: Request, res: Response, next: NextFuncti
     try {
         const { name } = req.params;
         logger.debug('get player by playerName');
-        logger.warn(name);
         const [rounds, roundCount] = await roundModel.readManyByName(name);
-        logger.warn(rounds);
         const result = await calculate([rounds, roundCount], name);
         success(res, result);
     } catch (err) {
@@ -53,38 +51,46 @@ const calculate = async ([rounds, roundCount]: [IRound[], number], name: string)
         east: {
             rounds: 0,
             records: 0,
-            wins: 0,
-            loses: 0,
-            selfDrawns: 0,
-            draws: 0,
-            fakes: 0
+            win: 0,
+            lose: 0,
+            selfDrawn: 0,
+            beselfDrawn: 0,
+            draw: 0,
+            fake: 0,
+            amount: 0
         },
         south: {
             rounds: 0,
             records: 0,
-            wins: 0,
-            loses: 0,
-            selfDrawns: 0,
-            draws: 0,
-            fakes: 0
+            win: 0,
+            lose: 0,
+            selfDrawn: 0,
+            beselfDrawn: 0,
+            draw: 0,
+            fake: 0,
+            amount: 0
         },
         west: {
             rounds: 0,
             records: 0,
-            wins: 0,
-            loses: 0,
-            selfDrawns: 0,
-            draws: 0,
-            fakes: 0
+            win: 0,
+            lose: 0,
+            selfDrawn: 0,
+            beselfDrawn: 0,
+            draw: 0,
+            fake: 0,
+            amount: 0
         },
         north: {
             rounds: 0,
             records: 0,
-            wins: 0,
-            loses: 0,
-            selfDrawns: 0,
-            draws: 0,
-            fakes: 0
+            win: 0,
+            lose: 0,
+            selfDrawn: 0,
+            beselfDrawn: 0,
+            draw: 0,
+            fake: 0,
+            amount: 0
         }
     };
     const roundPromise = rounds.map(async round => {
@@ -92,9 +98,9 @@ const calculate = async ([rounds, roundCount]: [IRound[], number], name: string)
         playerStatistics[wind].rounds++;
         playerStatistics[wind].records += round.records.length;
         const recordPromise = round.records.map(async record => {
-            if (await isWin(record, name)) playerStatistics[wind].wins++;
-            if (await isSelfDrawn(record, name)) playerStatistics[wind].selfDrawns++;
-            if (await isLose(record, name)) playerStatistics[wind].loses++;
+            if (await isWin(record, name)) playerStatistics[wind].win++;
+            if (await isSelfDrawn(record, name)) playerStatistics[wind].selfDrawn++;
+            if (await isLose(record, name)) playerStatistics[wind].lose++;
         });
         await Promise.all(recordPromise);
     });

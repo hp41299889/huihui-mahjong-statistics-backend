@@ -36,7 +36,6 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
             dealerCount: currentRound.dealerCount,
         };
         const record = await recordModel.createOne(recordDto);
-        currentRound.recordCount++;
         await playerCounter(round, record);
         await updateCurrentRound(record);
         success(res, record);
@@ -63,6 +62,7 @@ const takeWind = (round: IRound, name: string) => {
 };
 
 export const playerCounter = async (round: IRound, record: IRecord) => {
+    currentRound.recordCount++;
     if (record.endType === EEndType.WINNING) {
         const winWind = takeWind(round, record.winner.name);
         const loseWind = takeWind(round, record.losers[0].name);

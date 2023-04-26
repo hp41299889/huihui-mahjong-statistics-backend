@@ -8,8 +8,7 @@ const repo = Postgres.getRepository(Round);
 
 const createOne = async (dto: ICreateOneRoundDto) => {
     try {
-        logger.debug('create one round', dto);
-        logger.warn(dto);
+        logger.debug('create one round');
         return await repo.save(dto);
     } catch (err) {
         throw err;

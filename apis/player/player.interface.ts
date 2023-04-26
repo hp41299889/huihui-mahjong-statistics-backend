@@ -23,11 +23,13 @@ export interface IPlayer {
 interface IStatistics {
     rounds: number;
     records: number;
-    wins: number;
-    loses: number;
-    selfDrawns: number;
-    draws: number;
-    fakes: number;
+    win: number;
+    lose: number;
+    selfDrawn: number;
+    beselfDrawn: number;
+    draw: number;
+    fake: number;
+    amount: number;
 };
 
 export interface IPlayerStatistics {

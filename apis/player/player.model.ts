@@ -29,8 +29,13 @@ const readAll = () => {
 const readOneByName = async (name: string) => {
     try {
         logger.debug('read one by name');
-        return await repo.findOneBy({
-            name: name
+        return await repo.findOne({
+            // relations: {
+            //     rounds: true
+            // },
+            where: {
+                name: name
+            }
         });
     } catch (err) {
         throw err;
