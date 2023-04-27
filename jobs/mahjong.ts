@@ -1,6 +1,6 @@
-import { IPlayer } from "@apis/player";
-import { EEndType, EWind, IRecord } from "@apis/record";
-import { EDeskType, roundModel } from "@apis/round";
+import { IPlayer, playerModel } from "@apis/player";
+import { EEndType, EWind, ICreateOneRecordDto, IRecord, recordModel } from "@apis/record";
+import { EDeskType, IRound, roundModel } from "@apis/round";
 import { redisClient } from "services/redis";
 
 const CURRENTROUND = 'currentRound';
@@ -102,80 +102,21 @@ export const initCurrentRound = async () => {
             dealer: EWind.EAST,
             dealerCount: 0
         };
-        // await setCurrentRound(currentRound);
-        // const updatedCurrentRound = { ...currentRound };
-        // const calculatePromise = currentRound.records.map(async (record, index) => {
-        //     const { winner, losers } = record;
-        //     switch (record.endType) {
-        //         case EEndType.WINNING: {
-        //             console.log('winning');
-        //             const winnerWind = await getPlayerWind(winner.name);
-        //             const loserWindPromise = losers.map(async loser => {
-        //                 const loserWind = await getPlayerWind(loser.name);
-        //                 calculateAmount(winnerWind, loserWind, record, updatedCurrentRound);
-        //                 updatedCurrentRound.players[loserWind].lose++;
-        //             });
-        //             updatedCurrentRound.players[winnerWind].win++;
-        //             await Promise.all(loserWindPromise);
-        //             break;
-        //         };
-        //         case EEndType.SELF_DRAWN: {
-        //             console.log('self');
-        //             const winnerWind = await getPlayerWind(winner.name);
-        //             const loserWindPromise = losers.map(async loser => {
-        //                 const loserWind = await getPlayerWind(loser.name);
-        //                 calculateAmount(winnerWind, loserWind, record, updatedCurrentRound);
-        //                 updatedCurrentRound.players[loserWind].beSelfDrawn++;
-        //             });
-        //             updatedCurrentRound.players[winnerWind].selfDrawn++;
-        //             await Promise.all(loserWindPromise);
-        //             break;
-        //         };
-        //         case EEndType.DRAW: {
-        //             console.log('draw');
-
-        //             break;
-        //         };
-        //         case EEndType.FAKE: {
-        //             console.log('fake');
-
-        //             break;
-        //         };
-        //     };
-        //     await setCurrentRound(updatedCurrentRound);
-        //     if (index === currentRound.records.length - 1) {
-        //         await updateCurrentRound(lastRecord);
-        //     };
-        // });
-        // await Promise.all(calculatePromise);
-        const calculatePromise = latestRound.records.map(async (record) => {
-            const { winner, losers, point } = record;
-            // await addRecord(currentRound, {});
-            // await updateCurrentRound();
-        });
-        await Promise.all(calculatePromise);
         await setCurrentRound(currentRound);
         console.log(await getCurrentRound());
-
     };
 };
 
 export const updateCurrentRound = async (currentRound: ICurrentRound, addRecordDto: IAddRecordDto) => {
-    // const { dealer, circle } = record;
-    // const currentRound = await getCurrentRound();
-    // const updatedCurrentRound: ICurrentRound = {
-    //     ...currentRound,
-    //     circle: record.circle,
-    //     dealer: record.dealer
-    // };
-    // await setCurrentRound(updatedCurrentRound);
-    const { dealer, circle } = currentRound;
+    const { roundUid, dealer, circle, records } = currentRound;
+    const round = await roundModel.readOneByUid(roundUid);
     if (isDealerContinue(currentRound, addRecordDto)) {
         currentRound.dealerCount++;
-        // updatedCurrentRound.dealerCount = currentRound.dealerCount + 1;
     } else {
+        currentRound.dealerCount = 0;
         if (dealer === EWind.NORTH) {
             if (circle === EWind.NORTH) {
+                await insertRecords(records, currentRound, round);
                 await resetCurrentRound();
             } else {
                 const nextCircle = updateWind(circle);
@@ -186,11 +127,11 @@ export const updateCurrentRound = async (currentRound: ICurrentRound, addRecordD
         currentRound.dealer = nextDealer;
     };
     await setCurrentRound(currentRound);
-    console.log(currentRound);
 };
 
 export const addRecord = async (currentRound: ICurrentRound, addRecordDto: IAddRecordDto) => {
     currentRound.records = [...currentRound.records, addRecordDto];
+    const { dealer } = currentRound;
     const { winner, losers, endType, point } = addRecordDto;
     switch (endType) {
         case EEndType.WINNING: {
@@ -198,7 +139,7 @@ export const addRecord = async (currentRound: ICurrentRound, addRecordDto: IAddR
             const winnerWind = getPlayerWind(currentRound, winner);
             const loserWindPromise = losers.map(async loser => {
                 const loserWind = getPlayerWind(currentRound, loser);
-                // calculateAmount(winnerWind, loserWind, record, updatedCurrentRound);
+                calculateAmount(winnerWind, loserWind, point, dealer, currentRound);
                 currentRound.players[loserWind].lose++;
             });
             currentRound.players[winnerWind].win++;
@@ -210,7 +151,7 @@ export const addRecord = async (currentRound: ICurrentRound, addRecordDto: IAddR
             const winnerWind = getPlayerWind(currentRound, winner);
             const loserWindPromise = losers.map(async loser => {
                 const loserWind = getPlayerWind(currentRound, loser);
-                // calculateAmount(winnerWind, loserWind, record, updatedCurrentRound);
+                calculateAmount(winnerWind, loserWind, point, dealer, currentRound);
                 currentRound.players[loserWind].beSelfDrawn++;
             });
             currentRound.players[winnerWind].selfDrawn++;
@@ -219,7 +160,12 @@ export const addRecord = async (currentRound: ICurrentRound, addRecordDto: IAddR
         };
         case EEndType.DRAW: {
             console.log('draw');
+            const keyPromise = Object.keys(currentRound.players).map(async key => {
+                console.log('key', key);
 
+                currentRound.players[key].draw++;
+            });
+            await Promise.all(keyPromise);
             break;
         };
         case EEndType.FAKE: {
@@ -228,40 +174,44 @@ export const addRecord = async (currentRound: ICurrentRound, addRecordDto: IAddR
             break;
         };
     };
-
-    // const currentRound = await getCurrentRound();
-    // const record: IRecord = {
-    //     uid: '',
-    //     round: currentRound,
-    //     circle: currentRound.circle,
-    //     dealer: currentRound.dealer,
-    //     dealerCount: currentRound.dealerCount,
-    //     endType: addRecordDto.endType,
-    //     point: addRecordDto.point,
-    //     createdAt: new Date(),
-    //     winner: await getPlayerByName(addRecordDto.winner),
-    //     losers: await Promise.all(addRecordDto.loser.map(name => getPlayerByName(name)))
-    // };
-    // const updatedCurrentRound: ICurrentRound = {
-    //     ...currentRound,
-    //     records: [...currentRound.records, record]
-    // };
-    // await setCurrentRound(updatedCurrentRound);
+    await setCurrentRound(currentRound);
+    await updateCurrentRound(currentRound, addRecordDto);
+    console.log(currentRound);
 };
 
-const calculateAmount = (winWind: string, loseWind: string, point: number, updatedCurrentRound: ICurrentRound) => {
-    // if (isDealer(winWind, loseWind, record)) {
-    //     const points = record.point + updatedCurrentRound.dealerCount * 2 + 1;
-    //     updatedCurrentRound.players[winWind].amount += (updatedCurrentRound.base + updatedCurrentRound.point * points);
-    //     updatedCurrentRound.players[loseWind].amount -= (updatedCurrentRound.base + updatedCurrentRound.point * points);
-    // } else {
-    //     updatedCurrentRound.players[winWind].amount += (updatedCurrentRound.base + updatedCurrentRound.point * record.point);
-    //     updatedCurrentRound.players[loseWind].amount -= (updatedCurrentRound.base + updatedCurrentRound.point * record.point);
-    // };
+const insertRecords = async (addRecordDtos: IAddRecordDto[], currentRound: ICurrentRound, round: IRound) => {
+    const insertPromise = addRecordDtos.map(async addRecordDto => {
+        const { winner, losers, point, endType } = addRecordDto;
+        const winnerPlayer = await playerModel.readOneByName(winner);
+        const loserPlayers = await playerModel.readManyByNames(losers);
+        const dto: ICreateOneRecordDto = {
+            round: round,
+            winner: winnerPlayer,
+            losers: loserPlayers,
+            endType: endType,
+            point: point,
+            circle: currentRound.circle,
+            dealer: currentRound.dealer,
+            dealerCount: currentRound.dealerCount,
+        };
+        await recordModel.createOne(dto);
+    });
+    await Promise.all(insertPromise);
 };
 
-const isDealer = (winWind: string, loseWind: string, record: IRecord) => {
-    return winWind === record.dealer || loseWind === record.dealer;
+const calculateAmount = (winWind: string, loseWind: string, point: number, dealer: string, currentRound: ICurrentRound) => {
+    if (isDealer(winWind, loseWind, dealer)) {
+        const points = point + currentRound.dealerCount * 2 + 1;
+        currentRound.players[winWind].amount += (currentRound.base + currentRound.point * points);
+        currentRound.players[loseWind].amount -= (currentRound.base + currentRound.point * points);
+    } else {
+        currentRound.players[winWind].amount += (currentRound.base + currentRound.point * point);
+        currentRound.players[loseWind].amount -= (currentRound.base + currentRound.point * point);
+    };
+};
+
+const isDealer = (winWind: string, loseWind: string, dealer: string) => {
+    return winWind === dealer || loseWind === dealer;
 };
 
 const isDealerContinue = (currentRound: ICurrentRound, addRecordDto: IAddRecordDto) => {
@@ -269,7 +219,7 @@ const isDealerContinue = (currentRound: ICurrentRound, addRecordDto: IAddRecordD
 };
 
 const isDealerWin = (currentRound: ICurrentRound, winnerName: string) => {
-    return currentRound.dealer === getPlayerWind(currentRound, winnerName);
+    return winnerName ? currentRound.dealer === getPlayerWind(currentRound, winnerName) : false;
 };
 
 const isDraw = (endType: EEndType) => {
@@ -289,7 +239,22 @@ const setCurrentRound = async (currentRound: ICurrentRound) => {
 };
 
 const resetCurrentRound = async () => {
-    redisClient.set(CURRENTROUND, JSON.stringify({}));
+    redisClient.set(CURRENTROUND, JSON.stringify({
+        roundUid: '',
+        deskType: EDeskType.AUTO,
+        base: 0,
+        point: 0,
+        players: {
+            east: {},
+            south: {},
+            west: {},
+            north: {}
+        },
+        records: [],
+        circle: EWind.EAST,
+        dealer: EWind.EAST,
+        dealerCount: 0
+    }));
 };
 
 const updateWind = (currentWind: EWind) => {

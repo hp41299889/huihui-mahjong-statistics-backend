@@ -3,7 +3,6 @@ import { EDeskType } from "./round.enum";
 import { IRound, ICreateOneRoundDto, ICurrentRound, IPostOne } from "./round.interface";
 import roundRouter from "./round.route";
 import roundModel from "./round.model";
-import { currentRound, updateCurrentRound } from "./round.service";
 
 export {
     //entity
@@ -19,7 +18,4 @@ export {
     IRound,
     //router
     roundRouter,
-    //outher
-    currentRound,
-    updateCurrentRound
 };
