@@ -3,6 +3,8 @@ import cors from 'cors';
 import { routes } from '@apis/index';
 import { appConfig } from '@configs';
 import { Postgres } from '@databases';
+import { redisConnect } from 'services/redis';
+import { initCurrentRound } from 'jobs/mahjong';
 
 const app = express();
 app.use(express.json());
@@ -33,6 +35,8 @@ const appInit = async () => {
     try {
         await dbInit();
         routeInit();
+        await redisConnect();
+        await initCurrentRound();
         app.listen(appConfig.port, () => {
             console.log('app running on port', appConfig.port);
         });

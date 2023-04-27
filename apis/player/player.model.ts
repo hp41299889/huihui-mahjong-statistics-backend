@@ -58,13 +58,7 @@ const readManyByNames = async (name: string[]) => {
 const updateOneByName = async (name: string, data: IUpdateOnePlayerDto) => {
     const player = await repo.findOneBy({ name: name });
     if (player) {
-        player.win = data.win;
-        player.lose = data.lose;
-        player.beSelfDrawn = data.beSelfDrawn;
-        player.draw = data.draw;
-        player.fake = data.fake;
-        player.amount = data.amount;
-    };
+    }
     await repo.save(player);
 };
 

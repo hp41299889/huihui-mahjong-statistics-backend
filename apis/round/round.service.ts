@@ -8,6 +8,7 @@ import { IRecord, windList, EEndType, EWind } from '@apis/record';
 import { playerModel, IPlayer } from "@apis/player";
 import { playerCounter } from "@apis/record/record.service";
 import { IUpdateOnePlayerDto } from "@apis/player/player.interface";
+import { getCurrentRound, initCurrentRound } from "jobs/mahjong";
 
 const logger = loggerFactory('Api round');
 const { success, fail } = http;
@@ -63,57 +64,59 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
     };
 };
 
-export const getLast = async (req: Request, res: Response, next: NextFunction) => {
+export const getLatest = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        //前端新增round頁面會使用，若last round還沒結束要導向新增record頁面，並緩存currentRound
-        //前端新增record頁面會使用，進入和新增都要使用，同步currentRound資料並顯示
-        logger.debug('get last round');
-        //先檢查currentRound有資料嗎，沒有才會跟DB要，TODO 加入redis
-        if (currentRound.roundUid) {
-            //currentRound有存資料，直接回傳
-            logger.debug('currentRound有存資料，直接回傳');
-            success(res, currentRound);
-        } else {
-            //currentRound沒有資料，讀取DB
-            logger.debug('currentRound沒有資料，讀取DB');
-            const round = await roundModel.readLast();
-            if (!round) {
-                //根本沒有round
-                logger.debug('根本沒有round');
-                success(res, 'no round');
-            } else {
-                //讀取DB最新一筆round
-                logger.debug('讀取DB最新一筆record');
-                await synchronizeRound(round);
-                const lastRecord = await takeLastRecord(round);
-                //若沒有record，把currentRound更新成roundModel.readLast()
-                if (!lastRecord) {
-                    logger.debug('沒有record，把currentRound更新成roundModel.readLast()');
-                    success(res, currentRound);
-                } else {
-                    //若有record，判斷這個record是否是一將的最後一局
-                    //若是最後一局，清空currentRound
-                    logger.debug('若有record，判斷這個record是否是一將的最後一局');
-                    if (await isLastRecord(lastRecord, round.north)) {
-                        logger.debug('最後一局，清空currentRound');
-                        await resetCurrentRound();
-                        logger.warn('currentRound');
-                        success(res, currentRound);
-                    } else {
-                        //若不是最後一局，更新currentRound
-                        logger.debug('不是最後一局，更新currentRound');
-                        currentRound.circle = lastRecord.circle;
-                        currentRound.dealer = lastRecord.dealer;
-                        currentRound.dealerCount = lastRecord.dealerCount;
-                        //到目前為止currentRound是等同DB，接下來用風圈、風局、是否連莊判斷有沒有進入下一局
-                        await calculateStatus(round);
-                        await updateCurrentRound(lastRecord);
-                        success(res, currentRound);
-                    };
-                };
-            };
-        };
+        const currentRound = await getCurrentRound();
+        success(res, currentRound);
 
+        // //前端新增round頁面會使用，若last round還沒結束要導向新增record頁面，並緩存currentRound
+        // //前端新增record頁面會使用，進入和新增都要使用，同步currentRound資料並顯示
+        // logger.debug('get last round');
+        // //先檢查currentRound有資料嗎，沒有才會跟DB要，TODO 加入redis
+        // if (currentRound.roundUid) {
+        //     //currentRound有存資料，直接回傳
+        //     logger.debug('currentRound有存資料，直接回傳');
+        //     success(res, currentRound);
+        // } else {
+        //     //currentRound沒有資料，讀取DB
+        //     logger.debug('currentRound沒有資料，讀取DB');
+        //     const round = await roundModel.readLast();
+        //     if (!round) {
+        //         //根本沒有round
+        //         logger.debug('根本沒有round');
+        //         success(res, 'no round');
+        //     } else {
+        //         //讀取DB最新一筆round
+        //         logger.debug('讀取DB最新一筆record');
+        //         await synchronizeRound(round);
+        //         const lastRecord = await takeLastRecord(round);
+        //         //若沒有record，把currentRound更新成roundModel.readLast()
+        //         if (!lastRecord) {
+        //             logger.debug('沒有record，把currentRound更新成roundModel.readLast()');
+        //             success(res, currentRound);
+        //         } else {
+        //             //若有record，判斷這個record是否是一將的最後一局
+        //             //若是最後一局，清空currentRound
+        //             logger.debug('若有record，判斷這個record是否是一將的最後一局');
+        //             if (await isLastRecord(lastRecord, round.north)) {
+        //                 logger.debug('最後一局，清空currentRound');
+        //                 await resetCurrentRound();
+        //                 logger.warn('currentRound');
+        //                 success(res, currentRound);
+        //             } else {
+        //                 //若不是最後一局，更新currentRound
+        //                 logger.debug('不是最後一局，更新currentRound');
+        //                 currentRound.circle = lastRecord.circle;
+        //                 currentRound.dealer = lastRecord.dealer;
+        //                 currentRound.dealerCount = lastRecord.dealerCount;
+        //                 //到目前為止currentRound是等同DB，接下來用風圈、風局、是否連莊判斷有沒有進入下一局
+        //                 await calculateStatus(round);
+        //                 await updateCurrentRound(lastRecord);
+        //                 success(res, currentRound);
+        //             };
+        //         };
+        //     };
+        // };
     } catch (err) {
         next(err);
         fail(res, err);
@@ -180,16 +183,16 @@ export const updateCurrentRound = async (record: IRecord) => {
             if (record.circle === EWind.NORTH) {
                 //北風北且沒有連莊，代表這將結束，重置currentRound
                 const updatePromise = Object.entries(currentRound.players).map(async (player, index) => {
-                    const data: IUpdateOnePlayerDto = {
-                        win: player[1].win,
-                        lose: player[1].lose,
-                        beSelfDrawn: player[1].beSelfDrawn,
-                        draw: player[1].draw,
-                        fake: player[1].fake,
-                        amount: player[1].amount
-                    };
+                    // const data: IUpdateOnePlayerDto = {
+                    //     win: player[1].win,
+                    //     lose: player[1].lose,
+                    //     beSelfDrawn: player[1].beSelfDrawn,
+                    //     draw: player[1].draw,
+                    //     fake: player[1].fake,
+                    //     amount: player[1].amount
+                    // };
                     console.log(player);
-                    await playerModel.updateOneByName(player[1].name, data);
+                    // await playerModel.updateOneByName(player[1].name, data);
                 });
                 await Promise.all(updatePromise);
                 await resetCurrentRound();

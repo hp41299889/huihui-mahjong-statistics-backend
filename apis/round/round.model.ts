@@ -31,7 +31,7 @@ const readOneByUid = async (uid: string) => {
     };
 };
 
-const readLast = async () => {
+const readLatest = async () => {
     try {
         return repo.findOne({
             where: {},
@@ -65,6 +65,6 @@ export default {
     createOne,
     readAll,
     readOneByUid,
-    readLast,
+    readLatest,
     readManyByName
 };
