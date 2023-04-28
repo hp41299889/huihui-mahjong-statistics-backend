@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import {
+    deleteLastRecord,
     postOne
 } from './record.service';
 
@@ -12,5 +13,6 @@ router.route('/')
 
 router.route('/:roundUid')
     .post(postOne)
+    .delete(deleteLastRecord)
 
 export default router;

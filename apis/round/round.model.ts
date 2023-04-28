@@ -8,8 +8,7 @@ const repo = Postgres.getRepository(Round);
 
 const createOne = async (dto: ICreateOneRoundDto) => {
     try {
-        logger.debug('create one round', dto);
-        logger.warn(dto);
+        logger.debug('create one round');
         return await repo.save(dto);
     } catch (err) {
         throw err;
@@ -32,7 +31,7 @@ const readOneByUid = async (uid: string) => {
     };
 };
 
-const readLast = async () => {
+const readLatest = async () => {
     try {
         return repo.findOne({
             where: {},
@@ -66,6 +65,6 @@ export default {
     createOne,
     readAll,
     readOneByUid,
-    readLast,
+    readLatest,
     readManyByName
 };

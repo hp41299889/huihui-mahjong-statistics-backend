@@ -25,6 +25,7 @@ export interface ICurrentRound {
     base: number;
     point: number;
     players: {
+        [key: string]: IPlayer;
         east: IPlayer
         south: IPlayer
         west: IPlayer
@@ -33,6 +34,9 @@ export interface ICurrentRound {
     circle: EWind;
     dealer: EWind;
     dealerCount: number;
+    recordCount: number;
+    drawCount: number;
+    fakeCount: number;
 };
 
 //service

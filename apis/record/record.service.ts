@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 
 import { http, loggerFactory } from '@utils';
-import { EWind } from "./record.enum";
-import { IPostOne, ICreateOneRecordDto } from "./record.interface";
+import { EEndType, EWind } from "./record.enum";
+import { IPostOne, ICreateOneRecordDto, IRecord } from "./record.interface";
 import recordModel from "./record.model";
-import { playerModel } from "@apis/player";
-import { roundModel, currentRound, updateCurrentRound } from "@apis/round";
+import { IPlayer, playerModel } from "@apis/player";
+import { roundModel, IRound } from "@apis/round";
+import { IAddRecordDto, ICurrentRound, addRecord, getCurrentRound, updateCurrentRound } from "../../jobs/mahjong";
+
 
 const { success, fail } = http;
 const logger = loggerFactory('Api record');
@@ -21,23 +23,26 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
     try {
         const { roundUid } = req.params;
         const { body }: { body: IPostOne } = req;
-        const round = await roundModel.readOneByUid(roundUid);
-        const winner = await playerModel.readOneByName(body.winner);
-        const loser = await playerModel.readManyByNames(body.loser);
-        const recordDto: ICreateOneRecordDto = {
-            round: round,
-            endType: body.endType,
-            point: body.point,
+        const { winner, loser, point, endType } = body;
+        const addRecordDto: IAddRecordDto = {
             winner: winner,
             losers: loser,
-            circle: currentRound.circle,
-            dealer: currentRound.dealer,
-            dealerCount: currentRound.dealerCount,
+            point: point,
+            endType: endType
         };
-        const record = await recordModel.createOne(recordDto);
-        await updateCurrentRound(record);
-        // await nextDealer(recordDto, takeWind(round, winner.name));
-        success(res, record);
+        await addRecord(addRecordDto);
+        success(res, addRecordDto);
+    } catch (err) {
+        next(err);
+        fail(res, err);
+    };
+};
+
+export const deleteLastRecord = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { roundUid } = req.params;
+        const result = await recordModel.deleteLastByRoundUid(roundUid);
+        success(res, result);
     } catch (err) {
         next(err);
         fail(res, err);

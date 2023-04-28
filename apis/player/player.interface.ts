@@ -12,20 +12,17 @@ export interface IPlayer {
     winner: IPlayer;
 };
 
-//model
-export interface ICreateOnePlayerDto {
-    name: string;
-};
-
 //service
 interface IStatistics {
     rounds: number;
     records: number;
-    wins: number;
-    loses: number;
-    selfDrawns: number;
-    draws: number;
-    fakes: number;
+    win: number;
+    lose: number;
+    selfDrawn: number;
+    beselfDrawn: number;
+    draw: number;
+    fake: number;
+    amount: number;
 };
 
 export interface IPlayerStatistics {
@@ -36,3 +33,16 @@ export interface IPlayerStatistics {
     north: IStatistics;
 };
 
+//model
+export interface ICreateOnePlayerDto {
+    name: string;
+};
+
+export interface IUpdateOnePlayerDto {
+    win: number;
+    lose: number;
+    beSelfDrawn: number;
+    draw: number;
+    fake: number;
+    amount: number;
+};

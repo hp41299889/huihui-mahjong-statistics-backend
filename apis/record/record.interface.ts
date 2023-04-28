@@ -23,9 +23,6 @@ export interface IRecord {
 export interface IPostOne {
     winner: string;
     loser: string[];
-    circle: EWind;
-    dealer: EWind;
-    dealerCount: number;
     endType: EEndType;
     point: number;
 };

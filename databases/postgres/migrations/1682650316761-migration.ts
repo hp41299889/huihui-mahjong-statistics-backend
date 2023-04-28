@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Migration1681975341557 implements MigrationInterface {
-    name = 'Migration1681975341557'
+export class Migration1682650316761 implements MigrationInterface {
+    name = 'Migration1682650316761'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "player" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_7baa5220210c74f8db27c06f8b4" UNIQUE ("name"), CONSTRAINT "PK_65edadc946a7faf4b638d5e8885" PRIMARY KEY ("id"))`);
@@ -10,7 +10,7 @@ export class Migration1681975341557 implements MigrationInterface {
         await queryRunner.query(`CREATE TYPE "public"."record_circle_enum" AS ENUM('east', 'south', 'west', 'north')`);
         await queryRunner.query(`CREATE TYPE "public"."record_dealer_enum" AS ENUM('east', 'south', 'west', 'north')`);
         await queryRunner.query(`CREATE TYPE "public"."record_endtype_enum" AS ENUM('winning', 'self-drawn', 'draw', 'fake')`);
-        await queryRunner.query(`CREATE TABLE "record" ("uid" uuid NOT NULL DEFAULT uuid_generate_v4(), "circle" "public"."record_circle_enum" NOT NULL, "dealer" "public"."record_dealer_enum" NOT NULL, "dealerCount" integer NOT NULL, "endType" "public"."record_endtype_enum" NOT NULL, "point" integer NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "roundUid" uuid, "winnerId" integer, CONSTRAINT "PK_8de44784d54d4397e7cce8fcd37" PRIMARY KEY ("uid"))`);
+        await queryRunner.query(`CREATE TABLE "record" ("uid" uuid NOT NULL DEFAULT uuid_generate_v4(), "circle" "public"."record_circle_enum" NOT NULL, "dealer" "public"."record_dealer_enum" NOT NULL, "dealerCount" integer NOT NULL, "endType" "public"."record_endtype_enum" NOT NULL, "point" integer, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "roundUid" uuid, "winnerId" integer, CONSTRAINT "PK_8de44784d54d4397e7cce8fcd37" PRIMARY KEY ("uid"))`);
         await queryRunner.query(`CREATE TABLE "record_losers" ("recordUid" uuid NOT NULL, "playerId" integer NOT NULL, CONSTRAINT "PK_df5d84c7f5eb076c6e6246e2e0f" PRIMARY KEY ("recordUid", "playerId"))`);
         await queryRunner.query(`CREATE INDEX "IDX_d94fcc893c8dc8837c9a829269" ON "record_losers" ("recordUid") `);
         await queryRunner.query(`CREATE INDEX "IDX_b1afd9d1db077de1369a3b345c" ON "record_losers" ("playerId") `);
