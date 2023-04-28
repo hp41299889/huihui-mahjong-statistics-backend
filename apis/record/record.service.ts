@@ -6,7 +6,7 @@ import { IPostOne, ICreateOneRecordDto, IRecord } from "./record.interface";
 import recordModel from "./record.model";
 import { IPlayer, playerModel } from "@apis/player";
 import { roundModel, IRound } from "@apis/round";
-import { IAddRecordDto, ICurrentRound, addRecord, getCurrentRound, updateCurrentRound } from "jobs/mahjong";
+import { IAddRecordDto, ICurrentRound, addRecord, getCurrentRound, updateCurrentRound } from "../../jobs/mahjong";
 
 
 const { success, fail } = http;
@@ -24,14 +24,13 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
         const { roundUid } = req.params;
         const { body }: { body: IPostOne } = req;
         const { winner, loser, point, endType } = body;
-        const currentRound = await getCurrentRound();
         const addRecordDto: IAddRecordDto = {
             winner: winner,
             losers: loser,
             point: point,
             endType: endType
         };
-        await addRecord(currentRound, addRecordDto);
+        await addRecord(addRecordDto);
         success(res, addRecordDto);
     } catch (err) {
         next(err);

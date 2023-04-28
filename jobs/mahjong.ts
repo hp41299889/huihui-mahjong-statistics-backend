@@ -1,7 +1,7 @@
 import { IPlayer, playerModel } from "@apis/player";
 import { EEndType, EWind, ICreateOneRecordDto, IRecord, recordModel } from "@apis/record";
 import { EDeskType, IRound, roundModel } from "@apis/round";
-import { redisClient } from "services/redis";
+import { redisClient } from "../services/redis";
 
 const CURRENTROUND = 'currentRound';
 
@@ -29,11 +29,12 @@ interface IPlayerStatistics {
 };
 
 export interface ICurrentRound {
+    round: IRound;
     roundUid: string;
     deskType: EDeskType;
     base: number;
     point: number;
-    records: IAddRecordDto[];
+    records: ICreateOneRecordDto[];
     players: {
         [key: string]: IPlayerStatistics;
         east: IPlayerStatistics;
@@ -51,6 +52,7 @@ export const initCurrentRound = async () => {
     resetCurrentRound();
     if (latestRound) {
         const currentRound: ICurrentRound = {
+            round: latestRound,
             roundUid: latestRound.uid,
             deskType: latestRound.deskType,
             base: latestRound.base,
@@ -118,6 +120,7 @@ export const updateCurrentRound = async (currentRound: ICurrentRound, addRecordD
             if (circle === EWind.NORTH) {
                 await insertRecords(records, currentRound, round);
                 await resetCurrentRound();
+                currentRound = await getCurrentRound();
             } else {
                 const nextCircle = updateWind(circle);
                 currentRound.circle = nextCircle;
@@ -129,10 +132,21 @@ export const updateCurrentRound = async (currentRound: ICurrentRound, addRecordD
     await setCurrentRound(currentRound);
 };
 
-export const addRecord = async (currentRound: ICurrentRound, addRecordDto: IAddRecordDto) => {
-    currentRound.records = [...currentRound.records, addRecordDto];
-    const { dealer } = currentRound;
+export const addRecord = async (addRecordDto: IAddRecordDto) => {
+    const currentRound = await getCurrentRound();
+    const { round, circle, dealer, dealerCount } = currentRound;
     const { winner, losers, endType, point } = addRecordDto;
+    const record: ICreateOneRecordDto = {
+        winner: await playerModel.readOneByName(winner),
+        losers: await playerModel.readManyByNames(losers),
+        circle: circle,
+        dealer: dealer,
+        dealerCount: dealerCount,
+        endType: endType,
+        point: point,
+        round: round
+    };
+    currentRound.records = [...currentRound.records, record];
     switch (endType) {
         case EEndType.WINNING: {
             console.log('winning');
@@ -179,21 +193,8 @@ export const addRecord = async (currentRound: ICurrentRound, addRecordDto: IAddR
     console.log(currentRound);
 };
 
-const insertRecords = async (addRecordDtos: IAddRecordDto[], currentRound: ICurrentRound, round: IRound) => {
-    const insertPromise = addRecordDtos.map(async addRecordDto => {
-        const { winner, losers, point, endType } = addRecordDto;
-        const winnerPlayer = await playerModel.readOneByName(winner);
-        const loserPlayers = await playerModel.readManyByNames(losers);
-        const dto: ICreateOneRecordDto = {
-            round: round,
-            winner: winnerPlayer,
-            losers: loserPlayers,
-            endType: endType,
-            point: point,
-            circle: currentRound.circle,
-            dealer: currentRound.dealer,
-            dealerCount: currentRound.dealerCount,
-        };
+const insertRecords = async (dtos: ICreateOneRecordDto[], currentRound: ICurrentRound, round: IRound) => {
+    const insertPromise = dtos.map(async dto => {
         await recordModel.createOne(dto);
     });
     await Promise.all(insertPromise);

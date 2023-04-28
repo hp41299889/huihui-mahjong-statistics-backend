@@ -1,8 +1,8 @@
 import { createClient } from "redis";
-import { postgresConfig } from "@configs";
+import { redisConfig } from "@configs";
 
 export const redisClient = createClient({
-    url: `redis://${postgresConfig.host}:6379`
+    url: `redis://${redisConfig.host}:6379`
 });
 
 export const redisConnect = async () => {

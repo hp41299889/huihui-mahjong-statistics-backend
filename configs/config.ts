@@ -14,3 +14,7 @@ export const postgresConfig = {
     port: env.HUIHUI_POSTGRES_PORT || 5432,
     database: env.HUIHUI_POSTGRES_DB
 };
+
+export const redisConfig = {
+    host: env.HUIHUI_REDIS_HOST
+};
