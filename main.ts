@@ -3,8 +3,13 @@ import cors from 'cors';
 import { routes } from '@apis/index';
 import { appConfig } from '@configs';
 import { Postgres } from '@databases';
+<<<<<<< HEAD
 import { redisConnect } from 'services/redis';
 import { initCurrentRound } from 'jobs/mahjong/mahjong';
+=======
+import { redisConnect } from './services/redis';
+import { initCurrentRound } from './jobs/mahjong';
+>>>>>>> 5744e4460452ef53cc656fba14b34023bedf334d
 
 const app = express();
 app.use(express.json());
