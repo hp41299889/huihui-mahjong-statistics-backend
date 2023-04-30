@@ -11,17 +11,6 @@ export const Record = new EntitySchema<IRecord>({
             type: 'uuid',
             generated: 'uuid'
         },
-        circle: {
-            type: 'enum',
-            enum: EWind
-        },
-        dealer: {
-            type: 'enum',
-            enum: EWind
-        },
-        dealerCount: {
-            type: Number
-        },
         endType: {
             type: 'enum',
             enum: EEndType
@@ -45,8 +34,7 @@ export const Record = new EntitySchema<IRecord>({
             target: 'player',
             type: 'many-to-one',
             joinColumn: { name: 'winnerId' },
-            nullable: true,
-            eager: true
+            nullable: true
         },
         losers: {
             target: 'player',
@@ -58,7 +46,6 @@ export const Record = new EntitySchema<IRecord>({
                 }
             },
             nullable: true,
-            eager: true,
             cascade: true
         },
     }

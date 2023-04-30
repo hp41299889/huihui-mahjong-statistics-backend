@@ -31,12 +31,15 @@ const readOneByUid = async (uid: string) => {
     };
 };
 
-const readLatest = async () => {
+const readLastWithPlayers = async () => {
     try {
         return repo.findOne({
             where: {},
             relations: {
-                records: true
+                east: true,
+                south: true,
+                west: true,
+                north: true
             },
             order: {
                 createdAt: 'DESC'
@@ -65,6 +68,6 @@ export default {
     createOne,
     readAll,
     readOneByUid,
-    readLatest,
+    readLastWithPlayers,
     readManyByName
 };

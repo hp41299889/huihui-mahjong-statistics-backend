@@ -1,8 +1,8 @@
 import { Router } from "express";
 
 import {
-    deleteLastRecord,
-    postOne
+    postOneToCurrentRoound,
+    deleteLastToCurrentRoound
 } from './record.service';
 
 
@@ -12,7 +12,7 @@ router.route('/')
 // .get(getRecords);
 
 router.route('/:roundUid')
-    .post(postOne)
-    .delete(deleteLastRecord)
+    .post(postOneToCurrentRoound)
+    .delete(deleteLastToCurrentRoound)
 
 export default router;

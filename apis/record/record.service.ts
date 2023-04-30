@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 
 import { http, loggerFactory } from '@utils';
-import { EEndType, EWind } from "./record.enum";
-import { IPostOne, ICreateOneRecordDto, IRecord } from "./record.interface";
+import { EWind } from "./record.enum";
 import recordModel from "./record.model";
-import { IPlayer, playerModel } from "@apis/player";
-import { roundModel, IRound } from "@apis/round";
-import { IAddRecordDto, ICurrentRound, addRecord, getCurrentRound, updateCurrentRound } from "jobs/mahjong";
+import { addRecord } from "../../jobs/mahjong/mahjong";
+import { IAddRecord } from "../../jobs/mahjong/interface";
 
 
 const { success, fail } = http;
@@ -19,19 +17,19 @@ export const windList = [
     EWind.NORTH
 ];
 
-export const postOne = async (req: Request, res: Response, next: NextFunction) => {
+export const postOneToCurrentRoound = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { roundUid } = req.params;
-        const { body }: { body: IPostOne } = req;
-        const { winner, loser, point, endType } = body;
-        const currentRound = await getCurrentRound();
-        const addRecordDto: IAddRecordDto = {
+        const { body }: { body: IAddRecord } = req;
+        console.log('api', body);
+        const { winner, losers, point, endType } = body;
+        const addRecordDto: IAddRecord = {
             winner: winner,
-            losers: loser,
+            losers: losers,
             point: point,
             endType: endType
         };
-        await addRecord(currentRound, addRecordDto);
+        await addRecord(addRecordDto);
         success(res, addRecordDto);
     } catch (err) {
         next(err);
@@ -39,7 +37,7 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
     };
 };
 
-export const deleteLastRecord = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteLastToCurrentRoound = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { roundUid } = req.params;
         const result = await recordModel.deleteLastByRoundUid(roundUid);

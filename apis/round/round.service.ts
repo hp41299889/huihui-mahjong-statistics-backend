@@ -7,7 +7,7 @@ import { ICurrentRound, IPostOne, ICreateOneRoundDto, IRound } from "./round.int
 import { IRecord, windList, EEndType, EWind } from '@apis/record';
 import { playerModel, IPlayer } from "@apis/player";
 import { IUpdateOnePlayerDto } from "@apis/player/player.interface";
-import { getCurrentRound, initCurrentRound } from "jobs/mahjong";
+import { getCurrentRound, initCurrentRound } from "jobs/mahjong/mahjong";
 
 const logger = loggerFactory('Api round');
 const { success, fail } = http;

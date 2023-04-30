@@ -4,7 +4,7 @@ import { routes } from '@apis/index';
 import { appConfig } from '@configs';
 import { Postgres } from '@databases';
 import { redisConnect } from 'services/redis';
-import { initCurrentRound } from 'jobs/mahjong';
+import { initCurrentRound } from 'jobs/mahjong/mahjong';
 
 const app = express();
 app.use(express.json());

@@ -8,32 +8,20 @@ export interface IRecord {
     uid: string;
     createdAt: Date;
     //column
-    circle: EWind;
-    dealer: EWind;
-    dealerCount: number;
     endType: EEndType;
     point: number;
     //relation
     winner: IPlayer;
-    losers: IPlayer[];
     round: IRound;
+    losers: IPlayer[];
 };
 
 //service
-export interface IPostOne {
-    winner: string;
-    loser: string[];
-    endType: EEndType;
-    point: number;
-};
 
 //model
 export interface ICreateOneRecordDto {
     winner: IPlayer;
     losers: IPlayer[];
-    circle: EWind;
-    dealer: EWind;
-    dealerCount: number;
     endType: EEndType;
     point: number;
     round: IRound;
