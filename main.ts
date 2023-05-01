@@ -3,13 +3,9 @@ import cors from 'cors';
 import { routes } from '@apis/index';
 import { appConfig } from '@configs';
 import { Postgres } from '@databases';
-<<<<<<< HEAD
-import { redisConnect } from 'services/redis';
-import { initCurrentRound } from 'jobs/mahjong/mahjong';
-=======
 import { redisConnect } from './services/redis';
-import { initCurrentRound } from './jobs/mahjong';
->>>>>>> 5744e4460452ef53cc656fba14b34023bedf334d
+import { initCurrentRound } from './jobs/mahjong/mahjong';
+import { initStatistics } from 'jobs/mahjong/statistics';
 
 const app = express();
 app.use(express.json());
@@ -41,6 +37,7 @@ const appInit = async () => {
         await dbInit();
         routeInit();
         await redisConnect();
+        await initStatistics();
         await initCurrentRound();
         app.listen(appConfig.port, () => {
             console.log('app running on port', appConfig.port);

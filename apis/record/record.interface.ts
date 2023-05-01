@@ -24,5 +24,6 @@ export interface ICreateOneRecordDto {
     losers: IPlayer[];
     endType: EEndType;
     point: number;
+    createdAt: Date;
     round: IRound;
 };

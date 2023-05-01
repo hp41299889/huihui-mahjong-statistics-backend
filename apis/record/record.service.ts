@@ -3,14 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import { http, loggerFactory } from '@utils';
 import { EWind } from "./record.enum";
 import recordModel from "./record.model";
-<<<<<<< HEAD
-import { addRecord } from "../../jobs/mahjong/mahjong";
+import { addRecord, getCurrentRound, setCurrentRound, updateCurrentRound } from "../../jobs/mahjong/mahjong";
 import { IAddRecord } from "../../jobs/mahjong/interface";
-=======
-import { IPlayer, playerModel } from "@apis/player";
-import { roundModel, IRound } from "@apis/round";
-import { IAddRecordDto, ICurrentRound, addRecord, getCurrentRound, updateCurrentRound } from "../../jobs/mahjong";
->>>>>>> 5744e4460452ef53cc656fba14b34023bedf334d
 
 
 const { success, fail } = http;
@@ -26,22 +20,20 @@ export const windList = [
 export const postOneToCurrentRoound = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { roundUid } = req.params;
-<<<<<<< HEAD
         const { body }: { body: IAddRecord } = req;
         console.log('api', body);
         const { winner, losers, point, endType } = body;
         const addRecordDto: IAddRecord = {
-=======
-        const { body }: { body: IPostOne } = req;
-        const { winner, loser, point, endType } = body;
-        const addRecordDto: IAddRecordDto = {
->>>>>>> 5744e4460452ef53cc656fba14b34023bedf334d
             winner: winner,
             losers: losers,
             point: point,
-            endType: endType
+            endType: endType,
+            createdAt: new Date()
         };
-        await addRecord(addRecordDto);
+        const currentRound = await getCurrentRound();
+        const addedCurrentRound = await addRecord(currentRound, addRecordDto);
+        const updatedCurrentRound = await updateCurrentRound(addedCurrentRound, addRecordDto);
+        await setCurrentRound(updatedCurrentRound);
         success(res, addRecordDto);
     } catch (err) {
         next(err);

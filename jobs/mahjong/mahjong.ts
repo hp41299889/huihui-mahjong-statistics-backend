@@ -1,6 +1,6 @@
 import { playerModel } from "@apis/player";
 import { EEndType, EWind, ICreateOneRecordDto, recordModel } from "@apis/record";
-import { IRound, roundModel } from "@apis/round";
+import { EDeskType, IRound, roundModel } from "@apis/round";
 import { redisClient } from "../../services/redis";
 import { ICurrentRound, IAddRecord } from "./interface";
 
@@ -14,67 +14,68 @@ export const initCurrentRound = async () => {
     const lastRound = await roundModel.readLastWithPlayers();
     await resetCurrentRound();
     if (lastRound) {
-        const currentRound: ICurrentRound = {
-            round: lastRound,
-            players: {
-                east: {
-                    id: lastRound.east.id,
-                    name: lastRound.east.name,
-                    win: 0,
-                    lose: 0,
-                    selfDrawn: 0,
-                    beSelfDrawn: 0,
-                    draw: 0,
-                    fake: 0,
-                    amount: 0
+        if (!await checkRound(lastRound)) {
+            const currentRound: ICurrentRound = {
+                round: lastRound,
+                players: {
+                    east: {
+                        id: lastRound.east.id,
+                        name: lastRound.east.name,
+                        win: 0,
+                        lose: 0,
+                        selfDrawn: 0,
+                        beSelfDrawn: 0,
+                        draw: 0,
+                        fake: 0,
+                        amount: 0
+                    },
+                    south: {
+                        id: lastRound.south.id,
+                        name: lastRound.south.name,
+                        win: 0,
+                        lose: 0,
+                        selfDrawn: 0,
+                        beSelfDrawn: 0,
+                        draw: 0,
+                        fake: 0,
+                        amount: 0
+                    },
+                    west: {
+                        id: lastRound.west.id,
+                        name: lastRound.west.name,
+                        win: 0,
+                        lose: 0,
+                        selfDrawn: 0,
+                        beSelfDrawn: 0,
+                        draw: 0,
+                        fake: 0,
+                        amount: 0
+                    },
+                    north: {
+                        id: lastRound.north.id,
+                        name: lastRound.north.name,
+                        win: 0,
+                        lose: 0,
+                        selfDrawn: 0,
+                        beSelfDrawn: 0,
+                        draw: 0,
+                        fake: 0,
+                        amount: 0
+                    },
                 },
-                south: {
-                    id: lastRound.south.id,
-                    name: lastRound.south.name,
-                    win: 0,
-                    lose: 0,
-                    selfDrawn: 0,
-                    beSelfDrawn: 0,
-                    draw: 0,
-                    fake: 0,
-                    amount: 0
-                },
-                west: {
-                    id: lastRound.west.id,
-                    name: lastRound.west.name,
-                    win: 0,
-                    lose: 0,
-                    selfDrawn: 0,
-                    beSelfDrawn: 0,
-                    draw: 0,
-                    fake: 0,
-                    amount: 0
-                },
-                north: {
-                    id: lastRound.north.id,
-                    name: lastRound.north.name,
-                    win: 0,
-                    lose: 0,
-                    selfDrawn: 0,
-                    beSelfDrawn: 0,
-                    draw: 0,
-                    fake: 0,
-                    amount: 0
-                },
-            },
-            records: [],
-            circle: EWind.EAST,
-            dealer: EWind.EAST,
-            dealerCount: 0,
-            venue: []
+                records: [],
+                circle: EWind.EAST,
+                dealer: EWind.EAST,
+                dealerCount: 0,
+                venue: []
+            };
+            await setCurrentRound(currentRound);
+            console.log(await getCurrentRound());
         };
-        await setCurrentRound(currentRound);
-        console.log(await getCurrentRound());
     };
 };
 
-export const addRecord = async (addRecordDto: IAddRecord) => {
-    const currentRound = await getCurrentRound();
+export const addRecord = async (currentRound: ICurrentRound, addRecordDto: IAddRecord) => {
     currentRound.records = [...currentRound.records, addRecordDto];
     const { round, dealer, dealerCount, players } = currentRound;
     const { winner, losers, endType, point } = addRecordDto;
@@ -131,9 +132,67 @@ export const addRecord = async (addRecordDto: IAddRecord) => {
             break;
         };
     };
-    await setCurrentRound(currentRound);
-    await updateCurrentRound(currentRound, addRecordDto);
-    console.log(currentRound);
+    return currentRound;
+};
+
+export const resetCurrentRound = async () => {
+    redisClient.set(CURRENTROUND, JSON.stringify({
+        round: {
+            uid: '',
+            records: []
+        },
+        players: {
+            east: {
+                id: 0,
+                name: '',
+                win: 0,
+                lose: 0,
+                selfDrawn: 0,
+                beSelfDrawn: 0,
+                draw: 0,
+                fake: 0,
+                amount: 0
+            },
+            south: {
+                id: 1,
+                name: '',
+                win: 0,
+                lose: 0,
+                selfDrawn: 0,
+                beSelfDrawn: 0,
+                draw: 0,
+                fake: 0,
+                amount: 0
+            },
+            west: {
+                id: 2,
+                name: '',
+                win: 0,
+                lose: 0,
+                selfDrawn: 0,
+                beSelfDrawn: 0,
+                draw: 0,
+                fake: 0,
+                amount: 0
+            },
+            north: {
+                id: 3,
+                name: '',
+                win: 0,
+                lose: 0,
+                selfDrawn: 0,
+                beSelfDrawn: 0,
+                draw: 0,
+                fake: 0,
+                amount: 0
+            },
+        },
+        records: [],
+        circle: EWind.EAST,
+        dealer: EWind.EAST,
+        dealerCount: 0,
+        venue: []
+    }));
 };
 
 export const popLastRecord = async () => {
@@ -143,8 +202,13 @@ export const popLastRecord = async () => {
     // switch
 };
 
-const updateCurrentRound = async (currentRound: ICurrentRound, addRecordDto: IAddRecord) => {
+export const setCurrentRound = async (currentRound: ICurrentRound) => {
+    redisClient.set(CURRENTROUND, JSON.stringify(currentRound));
+};
+
+export const updateCurrentRound = async (currentRound: ICurrentRound, addRecordDto: IAddRecord) => {
     const { dealer, circle } = currentRound;
+
     if (isDealerContinue(currentRound, addRecordDto)) {
         currentRound.dealerCount++;
     } else {
@@ -152,7 +216,15 @@ const updateCurrentRound = async (currentRound: ICurrentRound, addRecordDto: IAd
         if (dealer === EWind.NORTH) {
             if (circle === EWind.NORTH) {
                 await insertRecords(currentRound);
-                await resetCurrentRound();
+                const { round } = currentRound;
+                const nullCurrentRound: ICurrentRound = {
+                    ...currentRound,
+                    round: {
+                        ...round,
+                        uid: ''
+                    }
+                };
+                return nullCurrentRound;
             } else {
                 const nextCircle = updateWind(circle);
                 currentRound.circle = nextCircle;
@@ -161,7 +233,11 @@ const updateCurrentRound = async (currentRound: ICurrentRound, addRecordDto: IAd
         const nextDealer = updateWind(dealer);
         currentRound.dealer = nextDealer;
     };
-    await setCurrentRound(currentRound);
+    return currentRound;
+};
+
+const checkRound = async (round: IRound) => {
+    return round.records.length > 1;
 };
 
 const recoverCurrentRound = async () => {
@@ -171,7 +247,7 @@ const recoverCurrentRound = async () => {
 const insertRecords = async (currentRound: ICurrentRound) => {
     const { records, round } = currentRound;
     const insertPromise = records.map(async record => {
-        const { winner, losers, point, endType } = record;
+        const { winner, losers, point, endType, createdAt } = record;
         //TODO 從cr找，可以不需要進DB
         const winnerPlayer = await playerModel.readOneByName(winner);
         const loserPlayers = await playerModel.readManyByNames(losers);
@@ -180,7 +256,8 @@ const insertRecords = async (currentRound: ICurrentRound) => {
             winner: winnerPlayer,
             losers: loserPlayers,
             endType: endType,
-            point: point
+            point: point,
+            createdAt: createdAt
         };
         await recordModel.createOne(dto);
     });
@@ -221,24 +298,6 @@ const isFake = (endType: EEndType) => {
 
 const getPlayerWind = (currentRound: ICurrentRound, name: string) => {
     return name ? Object.entries(currentRound.players).find(([key, value]) => value.name === name)[0] : null;
-};
-
-const setCurrentRound = async (currentRound: ICurrentRound) => {
-    redisClient.set(CURRENTROUND, JSON.stringify(currentRound));
-};
-
-const resetCurrentRound = async () => {
-    redisClient.set(CURRENTROUND, JSON.stringify({
-        round: {
-            uid: '',
-            records: []
-        },
-        players: {
-            east: {
-                draw: 0
-            }
-        }
-    }));
 };
 
 const updateWind = (currentWind: EWind) => {

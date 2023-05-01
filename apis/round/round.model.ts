@@ -17,7 +17,18 @@ const createOne = async (dto: ICreateOneRoundDto) => {
 
 const readAll = async () => {
     try {
-        return repo.find();
+        return repo.find({
+            relations: {
+                records: {
+                    winner: true,
+                    losers: true
+                },
+                east: true,
+                south: true,
+                west: true,
+                north: true
+            }
+        });
     } catch (err) {
         throw err;
     };
@@ -36,6 +47,10 @@ const readLastWithPlayers = async () => {
         return repo.findOne({
             where: {},
             relations: {
+                records: {
+                    winner: true,
+                    losers: true
+                },
                 east: true,
                 south: true,
                 west: true,

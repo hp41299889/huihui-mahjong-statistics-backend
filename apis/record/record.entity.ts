@@ -22,7 +22,6 @@ export const Record = new EntitySchema<IRecord>({
         createdAt: {
             name: 'created_at',
             type: 'timestamp',
-            createDate: true
         },
     },
     relations: {

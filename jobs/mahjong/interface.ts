@@ -22,16 +22,21 @@ export interface IAddRecord {
     losers: string[];
     endType: EEndType;
     point: number;
+    createdAt: Date;
+};
+
+export interface IStatistics {
+    [key: string]: IPlayerStatistics;
 };
 
 interface IPlayerStatistics {
     id: number;
     name: string;
-    win: number;
-    lose: number;
-    selfDrawn: number;
-    draw: number;
-    beSelfDrawn: number;
-    fake: number;
-    amount: number;
+    win?: number;
+    lose?: number;
+    selfDrawn?: number;
+    draw?: number;
+    beSelfDrawn?: number;
+    fake?: number;
+    amount?: number;
 };
