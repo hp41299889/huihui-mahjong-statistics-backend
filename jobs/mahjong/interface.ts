@@ -2,22 +2,26 @@ import { EEndType, EWind } from "@apis/record";
 import { IRound } from "@apis/round";
 
 export interface ICurrentRound {
-    round: IRound;
-    records: IAddRecord[];
-    players: {
+    status: string;
+    round?: IRound;
+    records?: IAddRecord[];
+    players?: {
         [key: string]: IPlayerStatistics;
-        east: IPlayerStatistics;
-        south: IPlayerStatistics;
-        west: IPlayerStatistics;
-        north: IPlayerStatistics;
+        east?: IPlayerStatistics;
+        south?: IPlayerStatistics;
+        west?: IPlayerStatistics;
+        north?: IPlayerStatistics;
     };
-    circle: EWind;
-    dealer: EWind;
-    dealerCount: number;
-    venue: string[];
+    circle?: EWind;
+    dealer?: EWind;
+    dealerCount?: number;
+    venue?: IAddRecord[];
 };
 
 export interface IAddRecord {
+    circle: EWind;
+    dealer: EWind;
+    dealerCount: number;
     winner: string;
     losers: string[];
     endType: EEndType;
@@ -30,8 +34,8 @@ export interface IStatistics {
 };
 
 interface IPlayerStatistics {
-    id: number;
-    name: string;
+    id?: number;
+    name?: string;
     win?: number;
     lose?: number;
     selfDrawn?: number;

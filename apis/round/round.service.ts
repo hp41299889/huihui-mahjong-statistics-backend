@@ -7,7 +7,7 @@ import { ICurrentRound, IPostOne, ICreateOneRoundDto, IRound } from "./round.int
 import { IRecord, windList, EEndType, EWind } from '@apis/record';
 import { playerModel, IPlayer } from "@apis/player";
 import { IUpdateOnePlayerDto } from "@apis/player/player.interface";
-import { getCurrentRound, initCurrentRound, resetCurrentRound } from "../../jobs/mahjong/mahjong";
+import { getCurrentRound, initCurrentRound, resetCurrentRound, saveRecords } from "../../jobs/mahjong/mahjong";
 
 const logger = loggerFactory('Api round');
 const { success, fail } = http;
@@ -49,6 +49,8 @@ export const getLatest = async (req: Request, res: Response, next: NextFunction)
 
 export const postResetCurrentRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const currentRound = await getCurrentRound();
+        await saveRecords(currentRound);
         await resetCurrentRound();
         success(res, 'reset currentRound');
     } catch (err) {

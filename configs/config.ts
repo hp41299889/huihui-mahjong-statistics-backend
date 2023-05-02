@@ -4,7 +4,8 @@ const { env } = process;
 
 export const appConfig = {
     port: env.APP_PORT,
-    prefix: env.APP_API_PREFIX
+    prefix: env.APP_API_PREFIX,
+    debug: env.APP_DEBUG
 };
 
 export const postgresConfig = {
