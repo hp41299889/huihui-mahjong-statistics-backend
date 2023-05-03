@@ -31,23 +31,19 @@ export const Round = new EntitySchema<IRound>({
     relations: {
         east: {
             target: 'player',
-            type: 'many-to-one',
-            eager: true
+            type: 'many-to-one'
         },
         south: {
             target: 'player',
-            type: 'many-to-one',
-            eager: true
+            type: 'many-to-one'
         },
         west: {
             target: 'player',
-            type: 'many-to-one',
-            eager: true
+            type: 'many-to-one'
         },
         north: {
             target: 'player',
-            type: 'many-to-one',
-            eager: true
+            type: 'many-to-one'
         },
         records: {
             target: 'record',

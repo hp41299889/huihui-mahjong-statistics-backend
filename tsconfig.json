@@ -13,6 +13,12 @@
       ],
       "@apis/*": [
         "./apis/*"
+      ],
+      "@jobs/*": [
+        "./jobs/*"
+      ],
+      "@services/*": [
+        "./services/*"
       ]
     },
     "target": "es2016",

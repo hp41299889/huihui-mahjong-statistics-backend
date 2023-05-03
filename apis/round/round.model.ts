@@ -17,7 +17,18 @@ const createOne = async (dto: ICreateOneRoundDto) => {
 
 const readAll = async () => {
     try {
-        return repo.find();
+        return repo.find({
+            relations: {
+                records: {
+                    winner: true,
+                    losers: true
+                },
+                east: true,
+                south: true,
+                west: true,
+                north: true
+            }
+        });
     } catch (err) {
         throw err;
     };
@@ -31,12 +42,19 @@ const readOneByUid = async (uid: string) => {
     };
 };
 
-const readLatest = async () => {
+const readLastWithPlayers = async () => {
     try {
         return repo.findOne({
             where: {},
             relations: {
-                records: true
+                records: {
+                    winner: true,
+                    losers: true
+                },
+                east: true,
+                south: true,
+                west: true,
+                north: true
             },
             order: {
                 createdAt: 'DESC'
@@ -65,6 +83,6 @@ export default {
     createOne,
     readAll,
     readOneByUid,
-    readLatest,
+    readLastWithPlayers,
     readManyByName
 };

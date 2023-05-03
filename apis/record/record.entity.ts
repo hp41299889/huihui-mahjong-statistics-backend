@@ -1,6 +1,6 @@
 import { EntitySchema } from 'typeorm';
 
-import { EWind, EEndType } from './record.enum';
+import { EEndType } from './record.enum';
 import { IRecord } from './record.interface';
 
 export const Record = new EntitySchema<IRecord>({
@@ -10,17 +10,6 @@ export const Record = new EntitySchema<IRecord>({
             primary: true,
             type: 'uuid',
             generated: 'uuid'
-        },
-        circle: {
-            type: 'enum',
-            enum: EWind
-        },
-        dealer: {
-            type: 'enum',
-            enum: EWind
-        },
-        dealerCount: {
-            type: Number
         },
         endType: {
             type: 'enum',
@@ -33,7 +22,6 @@ export const Record = new EntitySchema<IRecord>({
         createdAt: {
             name: 'created_at',
             type: 'timestamp',
-            createDate: true
         },
     },
     relations: {
@@ -45,8 +33,7 @@ export const Record = new EntitySchema<IRecord>({
             target: 'player',
             type: 'many-to-one',
             joinColumn: { name: 'winnerId' },
-            nullable: true,
-            eager: true
+            nullable: true
         },
         losers: {
             target: 'player',
@@ -58,7 +45,6 @@ export const Record = new EntitySchema<IRecord>({
                 }
             },
             nullable: true,
-            eager: true,
             cascade: true
         },
     }

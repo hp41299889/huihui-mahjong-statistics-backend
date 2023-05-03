@@ -3,8 +3,9 @@ import cors from 'cors';
 import { routes } from '@apis/index';
 import { appConfig } from '@configs';
 import { Postgres } from '@databases';
-import { redisConnect } from './services/redis';
-import { initCurrentRound } from './jobs/mahjong';
+import { redisConnect } from '@services/redis';
+import { initCurrentRound } from '@jobs/mahjong/mahjong';
+import { initStatistics } from '@jobs/mahjong/statistics';
 
 const app = express();
 app.use(express.json());
@@ -14,7 +15,7 @@ const dbInit = async () => {
     try {
         await Postgres.initialize()
             .then(() => {
-                console.log('postgres connect success');
+                // console.log('postgres connect success');
             }).catch(err => {
                 console.log(err);
                 throw err;
@@ -36,6 +37,7 @@ const appInit = async () => {
         await dbInit();
         routeInit();
         await redisConnect();
+        await initStatistics();
         await initCurrentRound();
         app.listen(appConfig.port, () => {
             console.log('app running on port', appConfig.port);
@@ -47,3 +49,5 @@ const appInit = async () => {
 };
 
 appInit();
+
+export default app;
