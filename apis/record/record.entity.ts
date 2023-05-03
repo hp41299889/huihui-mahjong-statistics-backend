@@ -1,6 +1,6 @@
 import { EntitySchema } from 'typeorm';
 
-import { EWind, EEndType } from './record.enum';
+import { EEndType } from './record.enum';
 import { IRecord } from './record.interface';
 
 export const Record = new EntitySchema<IRecord>({

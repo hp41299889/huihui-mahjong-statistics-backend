@@ -3,19 +3,21 @@ import { IRound } from "@apis/round";
 
 export interface ICurrentRound {
     status: string;
-    round?: IRound;
-    records?: IAddRecord[];
-    players?: {
-        [key: string]: IPlayerStatistics;
-        east?: IPlayerStatistics;
-        south?: IPlayerStatistics;
-        west?: IPlayerStatistics;
-        north?: IPlayerStatistics;
-    };
-    circle?: EWind;
-    dealer?: EWind;
-    dealerCount?: number;
-    venue?: IAddRecord[];
+    round: IRound;
+    records: IAddRecord[];
+    players: IPlayers;
+    circle: EWind;
+    dealer: EWind;
+    dealerCount: number;
+    venue: IAddRecord[];
+};
+
+export interface IPlayers {
+    [key: string]: IPlayerScore;
+    east: IPlayerScore;
+    south: IPlayerScore;
+    west: IPlayerScore;
+    north: IPlayerScore;
 };
 
 export interface IAddRecord {
@@ -29,18 +31,39 @@ export interface IAddRecord {
     createdAt: Date;
 };
 
+export interface IPlayerScore {
+    id: number;
+    name: string;
+    win: number;
+    lose: number;
+    selfDrawn: number;
+    draw: number;
+    beSelfDrawn: number;
+    fake: number;
+    amount: number;
+};
+
 export interface IStatistics {
     [key: string]: IPlayerStatistics;
 };
 
-interface IPlayerStatistics {
-    id?: number;
-    name?: string;
-    win?: number;
-    lose?: number;
-    selfDrawn?: number;
-    draw?: number;
-    beSelfDrawn?: number;
-    fake?: number;
-    amount?: number;
+export interface IPlayerStatistics {
+    id: number;
+    name: string;
+    createdAt?: Date;
+    winds: {
+        [key: string]: IWindStatistics;
+    };
+};
+
+interface IWindStatistics {
+    round: number;
+    record: number;
+    win: number;
+    lose: number;
+    selfDrawn: number;
+    draw: number;
+    beSelfDrawn: number;
+    fake: number;
+    amount: number;
 };

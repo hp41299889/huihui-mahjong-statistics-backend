@@ -1,15 +1,17 @@
 import { IPlayer } from "@apis/player";
 import { IRound } from "@apis/round";
-import { EWind, EEndType } from "./record.enum";
+import { EEndType } from "./record.enum";
 
 //entity
 export interface IRecord {
     //generate
     uid: string;
     createdAt: Date;
+
     //column
     endType: EEndType;
     point: number;
+
     //relation
     winner: IPlayer;
     round: IRound;

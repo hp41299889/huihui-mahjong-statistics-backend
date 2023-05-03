@@ -2,9 +2,8 @@ import { Request, Response, NextFunction } from "express";
 
 import { http, loggerFactory } from '@utils';
 import { EWind } from "./record.enum";
-import recordModel from "./record.model";
-import { addRecord, getCurrentRound, initCurrentRound, recoverCurrentRound, removeLastRecord, setCurrentRound, updateCurrentRound } from "../../jobs/mahjong/mahjong";
-import { IAddRecord } from "../../jobs/mahjong/interface";
+import { addRecord, getCurrentRound, initCurrentRound, recoverCurrentRound, removeLastRecord, setCurrentRound, updateCurrentRound } from "@jobs/mahjong/mahjong";
+import { IAddRecord } from "@jobs/mahjong/interface";
 
 
 const { success, fail } = http;
@@ -50,10 +49,10 @@ export const deleteLastToCurrentRound = async (req: Request, res: Response, next
         // const result = await recordModel.deleteLastByRoundUid(roundUid);
         const currentRound = await getCurrentRound();
         const removed = currentRound.records[currentRound.records.length - 1];
-        const removedCurrentRound = await removeLastRecord(currentRound);
         if (removed) {
-            const recoveredCurrentRound = await recoverCurrentRound(removedCurrentRound, removed);
-            await setCurrentRound(recoveredCurrentRound);
+            const recoveredCurrentRound = await recoverCurrentRound(currentRound, removed);
+            const removedCurrentRound = await removeLastRecord(recoveredCurrentRound);
+            await setCurrentRound(removedCurrentRound);
         } else {
             await initCurrentRound();
         };

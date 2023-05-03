@@ -8,16 +8,21 @@ import { windList } from "./record.service";
 export {
     //entity
     Record,
+
     //model
     recordModel,
+
     //enum
     EEndType,
     EWind,
+
     //interface
     IRecord,
     ICreateOneRecordDto,
+
     //router
     recordRouter,
+
     //orther
     windList
 };

@@ -3,9 +3,9 @@ import cors from 'cors';
 import { routes } from '@apis/index';
 import { appConfig } from '@configs';
 import { Postgres } from '@databases';
-import { redisConnect } from './services/redis';
-import { initCurrentRound } from './jobs/mahjong/mahjong';
-import { initStatistics } from 'jobs/mahjong/statistics';
+import { redisConnect } from '@services/redis';
+import { initCurrentRound } from '@jobs/mahjong/mahjong';
+import { initStatistics } from '@jobs/mahjong/statistics';
 
 const app = express();
 app.use(express.json());

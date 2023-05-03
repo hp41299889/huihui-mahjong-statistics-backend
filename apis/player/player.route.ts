@@ -2,14 +2,14 @@ import { Router } from "express";
 
 import {
     postOne,
-    getOneByName,
-    getAll
+    getAll,
+    getPlayerStatistics
 } from "./player.service";
 
 const router = Router();
 
-router.route('/:name')
-    .get(getOneByName);
+router.route('/statistics')
+    .get(getPlayerStatistics);
 
 router.route('/')
     .post(postOne)

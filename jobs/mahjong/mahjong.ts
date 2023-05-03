@@ -1,8 +1,7 @@
-import { playerModel } from "@apis/player";
 import { EEndType, EWind, ICreateOneRecordDto, recordModel } from "@apis/record";
 import { IRound, roundModel } from "@apis/round";
-import { redisClient } from "../../services/redis";
-import { ICurrentRound, IAddRecord } from "./interface";
+import { redisClient } from "@services/redis";
+import { ICurrentRound, IAddRecord, IPlayerScore } from "./interface";
 import { ERoundStatus } from "@apis/round/round.enum";
 
 const CURRENTROUND = 'currentRound';
@@ -33,8 +32,9 @@ export const addRecord = async (currentRound: ICurrentRound, addRecordDto: IAddR
 };
 
 export const removeLastRecord = async (currentRound: ICurrentRound) => {
-    const removed = currentRound.records.pop();
-    await recoverScore(currentRound, removed);
+    const lastRecord = currentRound.records[currentRound.records.length - 1];
+    await recoverScore(currentRound, lastRecord);
+    currentRound.records.pop();
     return currentRound;
 };
 
@@ -83,7 +83,7 @@ export const saveRecords = async (currentRound: ICurrentRound) => {
         west: west,
         north: north
     };
-    const insertPromise = records.map(async record => {
+    const savePromise = records.map(async record => {
         const { winner, losers, point, endType, createdAt } = record;
         const winnerPlayer = Object.values(players).find(player => player.name === winner);
         const loserPlayers = Object.values(players).filter(player => losers.includes(player.name));
@@ -97,11 +97,13 @@ export const saveRecords = async (currentRound: ICurrentRound) => {
         };
         await recordModel.createOne(dto);
     });
-    await Promise.all(insertPromise);
+    await Promise.all(savePromise);
 };
 
 export const resetCurrentRound = async () => {
-    const emptyPlayer = {
+    const emptyPlayerScore: IPlayerScore = {
+        id: 0,
+        name: '',
         win: 0,
         lose: 0,
         selfDrawn: 0,
@@ -118,7 +120,12 @@ export const resetCurrentRound = async () => {
         dealer: EWind.EAST,
         dealerCount: 0,
         venue: [],
-        players: {}
+        players: {
+            east: { ...emptyPlayerScore },
+            south: { ...emptyPlayerScore },
+            west: { ...emptyPlayerScore },
+            north: { ...emptyPlayerScore }
+        }
     };
     redisClient.set(CURRENTROUND, JSON.stringify(currentRound));
 };
@@ -210,7 +217,7 @@ const calculateScore = async (currentRound: ICurrentRound, addRecordDto: IAddRec
 };
 
 const recoverScore = async (currentRound: ICurrentRound, removed: IAddRecord) => {
-    const { round, dealer, dealerCount, players } = currentRound;
+    const { round, dealer, dealerCount, players, venue } = currentRound;
     const { winner, losers, endType, point } = removed;
     switch (endType) {
         case EEndType.WINNING: {
@@ -223,6 +230,7 @@ const recoverScore = async (currentRound: ICurrentRound, removed: IAddRecord) =>
             break;
         };
         case EEndType.SELF_DRAWN: {
+            await recoverVenue(currentRound, removed);
             const winnerWind = getPlayerWind(currentRound, winner);
             currentRound.players[winnerWind].selfDrawn--;
             if (isDealer(winnerWind, dealer)) {
@@ -244,7 +252,6 @@ const recoverScore = async (currentRound: ICurrentRound, removed: IAddRecord) =>
                 });
                 await Promise.all(loserWindPromise);
             };
-            await recoverVenue(currentRound, removed);
             break;
         };
         case EEndType.DRAW: {
@@ -274,13 +281,13 @@ const calculateVenue = async (currentRound: ICurrentRound, addRecordDto: IAddRec
     };
 };
 
-const recoverVenue = (currentRound: ICurrentRound, removed: IAddRecord) => {
+const recoverVenue = async (currentRound: ICurrentRound, removed: IAddRecord) => {
     const { venue, players } = currentRound;
     const { winner } = removed;
     const winnerWind = getPlayerWind(currentRound, winner);
-    if (venue[-1] == removed) {
-        venue.pop();
+    if (venue[venue.length - 1].createdAt === removed.createdAt) {
         players[winnerWind].amount += 50;
+        venue.pop();
     };
 };
 

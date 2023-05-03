@@ -6,10 +6,12 @@ export interface IRound {
     //generate
     uid: string;
     createdAt: Date;
+
     //column
     deskType: EDeskType;
     base: number;
     point: number;
+
     //relation
     east: IPlayer;
     south: IPlayer;

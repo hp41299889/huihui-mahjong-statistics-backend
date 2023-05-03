@@ -7,15 +7,19 @@ import roundModel from "./round.model";
 export {
     //entity
     Round,
+
     //model
     roundModel,
+
     //enum
     EDeskType,
+
     //interface
     ICreateOneRoundDto,
     IPostOne,
     ICurrentRound,
     IRound,
+
     //router
     roundRouter,
 };
