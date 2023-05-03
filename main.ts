@@ -15,7 +15,7 @@ const dbInit = async () => {
     try {
         await Postgres.initialize()
             .then(() => {
-                console.log('postgres connect success');
+                // console.log('postgres connect success');
             }).catch(err => {
                 console.log(err);
                 throw err;
@@ -40,7 +40,7 @@ const appInit = async () => {
         await initStatistics();
         await initCurrentRound();
         app.listen(appConfig.port, () => {
-            console.log('app running on port', appConfig.port);
+            // console.log('app running on port', appConfig.port);
         });
     } catch (err) {
         console.log(err);
@@ -49,3 +49,5 @@ const appInit = async () => {
 };
 
 appInit();
+
+export default app;
