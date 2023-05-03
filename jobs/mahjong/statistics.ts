@@ -1,6 +1,6 @@
 import { redisClient } from "@services/redis";
 import { roundModel } from "@apis/round";
-import { IAddRecord, ICurrentRound, IPlayers, IStatistics } from "./interface";
+import { IAddRecord, ICurrentRound, IPlayers, IStatistics, IWindStatistics } from "./interface";
 import { addRecord, generateCurrentRound, updateCurrentRound } from "./mahjong";
 
 const STATISTICS = 'statistics';
@@ -43,49 +43,57 @@ export const initStatistics = async () => {
 
 export const updateStatistics = async (statistics: IStatistics, tempRound: ICurrentRound) => {
     const { players, records } = tempRound;
-    const statisticsPromise = Object.keys(players).map(wind => {
-        const { id, name, win, lose, selfDrawn, beSelfDrawn, draw, fake, amount } = players[wind];
+
+    Object.keys(players).forEach(wind => {
+        const player = players[wind];
+        const { id, name, win, lose, selfDrawn, beSelfDrawn, draw, fake, amount } = player;
+
         if (!statistics[name]) {
             statistics[name] = {
-                id: id,
-                name: name,
+                id,
+                name,
                 winds: {}
             };
-            statistics[name].winds[wind] = {
-                round: 1,
-                record: records.length,
-                win: win,
-                lose: lose,
-                selfDrawn: selfDrawn,
-                draw: draw,
-                beSelfDrawn: beSelfDrawn,
-                fake: fake,
-                amount: amount
-            };
-        } else {
-            if (statistics[name].winds[wind]) {
-                statistics[name].winds[wind].round++;
-                statistics[name].winds[wind].record += records.length;
-                statistics[name].winds[wind].win += win;
-                statistics[name].winds[wind].lose += lose;
-                statistics[name].winds[wind].selfDrawn += selfDrawn;
-                statistics[name].winds[wind].beSelfDrawn += beSelfDrawn;
-                statistics[name].winds[wind].draw += draw;
-                statistics[name].winds[wind].fake += fake;
-                statistics[name].winds[wind].amount += amount;
-            } else {
-                statistics[name].winds[wind].round = 1;
-                statistics[name].winds[wind].record = records.length;
-                statistics[name].winds[wind].win = win;
-                statistics[name].winds[wind].lose = lose;
-                statistics[name].winds[wind].selfDrawn = selfDrawn;
-                statistics[name].winds[wind].beSelfDrawn = beSelfDrawn;
-                statistics[name].winds[wind].draw = draw;
-                statistics[name].winds[wind].fake = fake;
-                statistics[name].winds[wind].amount = amount;
-            };
-        };
+        }
+
+        statistics[name].winds[wind] = updateOrCreateWindStatistics(statistics[name].winds[wind], records.length, {
+            win,
+            lose,
+            selfDrawn,
+            beSelfDrawn,
+            draw,
+            fake,
+            amount
+        });
     });
-    await Promise.all(statisticsPromise);
+
     return statistics;
+};
+
+const updateOrCreateWindStatistics = (stats: IWindStatistics | undefined, recordsLength: number, data: Partial<IWindStatistics>): IWindStatistics => {
+    if (!stats) {
+        return {
+            round: 1,
+            record: recordsLength,
+            win: data.win || 0,
+            lose: data.lose || 0,
+            selfDrawn: data.selfDrawn || 0,
+            beSelfDrawn: data.beSelfDrawn || 0,
+            draw: data.draw || 0,
+            fake: data.fake || 0,
+            amount: data.amount || 0,
+        };
+    }
+
+    stats.round++;
+    stats.record += recordsLength;
+    stats.win += data.win || 0;
+    stats.lose += data.lose || 0;
+    stats.selfDrawn += data.selfDrawn || 0;
+    stats.beSelfDrawn += data.beSelfDrawn || 0;
+    stats.draw += data.draw || 0;
+    stats.fake += data.fake || 0;
+    stats.amount += data.amount || 0;
+
+    return stats;
 };

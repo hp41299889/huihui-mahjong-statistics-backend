@@ -40,7 +40,7 @@ const appInit = async () => {
         await initStatistics();
         await initCurrentRound();
         app.listen(appConfig.port, () => {
-            // console.log('app running on port', appConfig.port);
+            console.log('app running on port', appConfig.port);
         });
     } catch (err) {
         console.log(err);

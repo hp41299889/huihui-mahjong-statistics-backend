@@ -56,7 +56,7 @@ export interface IPlayerStatistics {
     };
 };
 
-interface IWindStatistics {
+export interface IWindStatistics {
     round: number;
     record: number;
     win: number;
