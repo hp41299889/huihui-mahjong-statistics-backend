@@ -79,10 +79,21 @@ const readManyByName = async (name: string) => {
     });
 };
 
+const deleteLast = async () => {
+    return repo.remove(
+        await repo.findOne({
+            where: {},
+            order: {
+                createdAt: 'DESC'
+            }
+        }));
+};
+
 export default {
     createOne,
     readAll,
     readOneByUid,
     readLastWithPlayers,
-    readManyByName
+    readManyByName,
+    deleteLast
 };
