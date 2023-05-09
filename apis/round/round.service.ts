@@ -104,14 +104,3 @@ export const deleteCurrentRound = async (req: Request, res: Response, next: Next
         fail(res, err);
     };
 };
-
-export const deleteCurrentRound = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        await roundModel.deleteLast();
-        await resetCurrentRound();
-        success(res, 'delete currentRound');
-    } catch (err) {
-        next(err);
-        fail(res, err);
-    };
-};
