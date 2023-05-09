@@ -18,12 +18,3 @@ export interface IPlayer {
 export interface ICreateOnePlayerDto {
     name: string;
 };
-
-export interface IUpdateOnePlayerDto {
-    win: number;
-    lose: number;
-    beSelfDrawn: number;
-    draw: number;
-    fake: number;
-    amount: number;
-};

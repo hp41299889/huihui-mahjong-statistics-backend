@@ -1,5 +1,5 @@
 import { Round } from "./round.entity";
-import { EDeskType } from "./round.enum";
+import { EDeskType, ERoundStatus } from "./round.enum";
 import { IRound, ICreateOneRoundDto, ICurrentRound, IPostOne } from "./round.interface";
 import roundRouter from "./round.route";
 import roundModel from "./round.model";
@@ -13,6 +13,7 @@ export {
 
     //enum
     EDeskType,
+    ERoundStatus,
 
     //interface
     ICreateOneRoundDto,

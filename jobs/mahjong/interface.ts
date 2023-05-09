@@ -1,5 +1,5 @@
 import { EEndType, EWind } from "@apis/record";
-import { IRound } from "@apis/round";
+import { EDeskType, IRound } from "@apis/round";
 
 export interface ICurrentRound {
     status: string;
@@ -45,6 +45,24 @@ export interface IPlayerScore {
 
 export interface IStatistics {
     [key: string]: IPlayerStatistics;
+};
+
+export interface IHistory {
+    [key: string]: IHistoryRound[];
+};
+
+export interface IHistoryRound {
+    uid: string;
+    createdAt: Date;
+    deskType: EDeskType;
+    base: number;
+    point: number;
+    east: IPlayerScore;
+    south: IPlayerScore;
+    west: IPlayerScore;
+    north: IPlayerScore;
+    records: IAddRecord[];
+    venue: IAddRecord[];
 };
 
 export interface IPlayerStatistics {

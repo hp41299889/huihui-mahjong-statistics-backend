@@ -1,44 +1,59 @@
+import dayjs from 'dayjs';
+
 import { redisClient } from "@services/redis";
 import { roundModel } from "@apis/round";
-import { IAddRecord, ICurrentRound, IPlayers, IStatistics, IWindStatistics } from "./interface";
+import { IAddRecord, ICurrentRound, IHistory, IStatistics, IWindStatistics } from "./interface";
 import { addRecord, generateCurrentRound, updateCurrentRound } from "./mahjong";
 
 const STATISTICS = 'statistics';
+const HISTORY = 'history';
 
 export const getStatistics = async () => {
     return JSON.parse(await redisClient.get(STATISTICS));
+};
+
+export const getHistory = async () => {
+    return JSON.parse(await redisClient.get(HISTORY));
 };
 
 export const setStatistics = async (statistics: IStatistics) => {
     redisClient.set(STATISTICS, JSON.stringify(statistics));
 };
 
+export const setHistory = async (history: IHistory) => {
+    redisClient.set(HISTORY, JSON.stringify(history));
+};
+
 export const initStatistics = async () => {
     const statistics: IStatistics = {};
+    const history: IHistory = {};
     const rounds = await roundModel.readAll();
-    const roundPromise = rounds.map(async round => {
-        const { east, south, west, north, records } = round;
+    for (const round of rounds) {
+        const { records } = round;
         let tempRound = generateCurrentRound(round);
-        const recordPromise = records.map(async record => {
+        for (const record of records) {
+            const { circle, dealer, dealerCount } = tempRound;
+            const { winner, losers, point, endType, createdAt } = record;
             const addRecordDto: IAddRecord = {
-                circle: tempRound.circle,
-                dealer: tempRound.dealer,
-                dealerCount: tempRound.dealerCount,
-                winner: record.winner ? record.winner.name : '',
-                losers: record.losers.length > 0 ? record.losers.map(loser => loser.name ? loser.name : '') : [],
-                point: record.point,
-                endType: record.endType,
-                createdAt: record.createdAt
+                circle: circle,
+                dealer: dealer,
+                dealerCount: dealerCount,
+                winner: winner ? winner.name : '',
+                losers: losers.length > 0 ? losers.map(loser => loser.name ? loser.name : '') : [],
+                point: point,
+                endType: endType,
+                createdAt: createdAt
             };
+
             const addedCurrentRound = await addRecord(tempRound, addRecordDto);
             tempRound = await updateCurrentRound(addedCurrentRound, addRecordDto);
-        });
-        await Promise.all(recordPromise);
-        const { players } = tempRound;
+        };
+
         const updatedStatistics = await updateStatistics(statistics, tempRound);
+        const updatedHistory = await updateHistory(history, tempRound);
         await setStatistics(updatedStatistics);
-    });
-    await Promise.all(roundPromise);
+        await setHistory(updatedHistory);
+    };
 };
 
 export const updateStatistics = async (statistics: IStatistics, tempRound: ICurrentRound) => {
@@ -54,7 +69,7 @@ export const updateStatistics = async (statistics: IStatistics, tempRound: ICurr
                 name,
                 winds: {}
             };
-        }
+        };
 
         statistics[name].winds[wind] = updateOrCreateWindStatistics(statistics[name].winds[wind], records.length, {
             win,
@@ -96,4 +111,31 @@ const updateOrCreateWindStatistics = (stats: IWindStatistics | undefined, record
     stats.amount += data.amount || 0;
 
     return stats;
+};
+
+export const updateHistory = async (history: IHistory, tempRound: ICurrentRound) => {
+    const { round, players, records, venue } = tempRound;
+    const { uid, base, point, createdAt, deskType } = round;
+    const { east, south, west, north } = players;
+    const date = dayjs(createdAt).format('YYYY-MM-DD');
+    if (history === null) {
+        history = {};
+    };
+    if (!history[date]) {
+        history[date] = [];
+    };
+    history[date].push({
+        uid: uid,
+        deskType: deskType,
+        base: base,
+        point: point,
+        createdAt: createdAt,
+        east: east,
+        south: south,
+        west: west,
+        north: north,
+        records: records,
+        venue: venue
+    });
+    return history;
 };

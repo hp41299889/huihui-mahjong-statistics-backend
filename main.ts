@@ -49,5 +49,3 @@ const appInit = async () => {
 };
 
 appInit();
-
-export default app;

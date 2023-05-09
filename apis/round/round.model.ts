@@ -6,6 +6,7 @@ import { ICreateOneRoundDto } from './round.interface';
 const logger = loggerFactory('Model round');
 const repo = Postgres.getRepository(Round);
 
+// Create
 const createOne = async (dto: ICreateOneRoundDto) => {
     try {
         logger.debug('create one round');
@@ -15,18 +16,25 @@ const createOne = async (dto: ICreateOneRoundDto) => {
     };
 };
 
+// Read
 const readAll = async () => {
+    logger.debug('read all rounds');
     try {
         return repo.find({
             relations: {
                 records: {
                     winner: true,
-                    losers: true
+                    losers: true,
                 },
                 east: true,
                 south: true,
                 west: true,
                 north: true
+            },
+            order: {
+                records: {
+                    createdAt: 'ASC'
+                }
             }
         });
     } catch (err) {
@@ -34,15 +42,8 @@ const readAll = async () => {
     };
 };
 
-const readOneByUid = async (uid: string) => {
-    try {
-        return repo.findOneBy({ uid: uid });
-    } catch (err) {
-        throw err;
-    };
-};
-
 const readLastWithPlayers = async () => {
+    logger.debug('read last round with players');
     try {
         return repo.findOne({
             where: {},
@@ -66,6 +67,7 @@ const readLastWithPlayers = async () => {
 };
 
 const readManyByName = async (name: string) => {
+    logger.debug('read many rounds by many names');
     return repo.findAndCount({
         where: [
             { east: { name: name } },
@@ -79,10 +81,20 @@ const readManyByName = async (name: string) => {
     });
 };
 
+const deleteLastRound = async () => {
+    logger.debug('delete last round');
+    return repo.remove(await repo.findOne({
+        where: {},
+        order: {
+            createdAt: 'DESC'
+        }
+    }));
+};
+
 export default {
     createOne,
     readAll,
-    readOneByUid,
     readLastWithPlayers,
-    readManyByName
+    readManyByName,
+    deleteLastRound
 };
