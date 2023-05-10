@@ -58,6 +58,9 @@ export const initStatistics = async () => {
 
 export const updateStatistics = async (statistics: IStatistics, tempRound: ICurrentRound) => {
     const { players, records } = tempRound;
+    if (statistics === null) {
+        statistics = {};
+    };
 
     Object.keys(players).forEach(wind => {
         const player = players[wind];

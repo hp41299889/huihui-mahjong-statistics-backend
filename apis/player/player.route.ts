@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
     postOne,
     getPlayerStatistics,
-    getAll
+    getAll,
 } from "./player.service";
 
 const router = Router();

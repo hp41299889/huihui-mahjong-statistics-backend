@@ -14,20 +14,7 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
     try {
         logger.debug('post one player');
         const { body }: { body: ICreateOnePlayerDto } = req;
-        const { name } = body;
         const result = await playerModel.createOne(body);
-        const statistics = await getStatistics();
-        const createdPlayerStatistics: IPlayerStatistics = {
-            id: result.id,
-            name: result.name,
-            createdAt: result.createdAt,
-            winds: {}
-        };
-        const updatedStatistics = {
-            ...statistics,
-            [name]: createdPlayerStatistics
-        };
-        await setStatistics(updatedStatistics);
         success(res, result);
     } catch (err) {
         fail(res, err);
@@ -46,6 +33,7 @@ export const getAll = async (req: Request, res: Response, next: NextFunction) =>
         next(err);
     };
 };
+
 export const getPlayerStatistics = async (req: Request, res: Response, next: NextFunction) => {
     try {
         logger.debug('get player statistics');

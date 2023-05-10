@@ -15,11 +15,12 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
     try {
         logger.debug('post one round');
         const { body }: { body: IPostOne } = req;
-        logger.warn(body);
-        const east = await playerModel.readOneByName(body.east);
-        const south = await playerModel.readOneByName(body.south);
-        const west = await playerModel.readOneByName(body.west);
-        const north = await playerModel.readOneByName(body.north);
+        const names = [body.east, body.south, body.west, body.north];
+        const players = await playerModel.readManyByNames(names);
+        const east = players.find(player => player.name === body.east);
+        const south = players.find(player => player.name === body.south);
+        const west = players.find(player => player.name === body.west);
+        const north = players.find(player => player.name === body.north);
         const dto: ICreateOneRoundDto = {
             ...body,
             east: east,
