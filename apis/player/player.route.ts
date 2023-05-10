@@ -2,8 +2,8 @@ import { Router } from "express";
 
 import {
     postOne,
+    getPlayerStatistics,
     getAll,
-    getPlayerStatistics
 } from "./player.service";
 
 const router = Router();
@@ -12,7 +12,7 @@ router.route('/statistics')
     .get(getPlayerStatistics);
 
 router.route('/')
-    .post(postOne)
-    .get(getAll);
+    .get(getAll)
+    .post(postOne);
 
 export default router;

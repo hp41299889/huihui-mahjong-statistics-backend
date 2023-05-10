@@ -4,21 +4,23 @@ import { http, loggerFactory } from '@utils';
 import roundModel from "./round.model";
 import { IPostOne, ICreateOneRoundDto } from "./round.interface";
 import { playerModel, } from "@apis/player";
-import { getCurrentRound, initCurrentRound, resetCurrentRound, saveRecords } from "@jobs/mahjong/mahjong";
-import { getStatistics, setStatistics, updateStatistics } from "@jobs/mahjong/statistics";
+import { getCurrentRoundState, initCurrentRound, resetCurrentRound, saveRecords } from "@jobs/mahjong/mahjong";
+import { getHistory, getStatistics, setHistory, setStatistics, updateHistory, updateStatistics } from "@jobs/mahjong/statistics";
 
 const logger = loggerFactory('Api round');
 const { success, fail } = http;
 
+//POST
 export const postOne = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        logger.debug('post one round');
         const { body }: { body: IPostOne } = req;
-        logger.debug('post one round', body);
-        logger.warn(body);
-        const east = await playerModel.readOneByName(body.east);
-        const south = await playerModel.readOneByName(body.south);
-        const west = await playerModel.readOneByName(body.west);
-        const north = await playerModel.readOneByName(body.north);
+        const names = [body.east, body.south, body.west, body.north];
+        const players = await playerModel.readManyByNames(names);
+        const east = players.find(player => player.name === body.east);
+        const south = players.find(player => player.name === body.south);
+        const west = players.find(player => player.name === body.west);
+        const north = players.find(player => player.name === body.north);
         const dto: ICreateOneRoundDto = {
             ...body,
             east: east,
@@ -35,9 +37,55 @@ export const postOne = async (req: Request, res: Response, next: NextFunction) =
     };
 };
 
-export const getLatest = async (req: Request, res: Response, next: NextFunction) => {
+export const postResetCurrentRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const currentRound = await getCurrentRound();
+        logger.debug('post reset currentRound');
+        const currentRound = await getCurrentRoundState();
+        const statistics = await getStatistics();
+        const history = await getHistory();
+        await saveRecords(currentRound);
+        const updatedStatistics = await updateStatistics(statistics, currentRound)
+        const updatedHistory = await updateHistory(history, currentRound);
+        await setStatistics(updatedStatistics);
+        await setHistory(updatedHistory);
+        await resetCurrentRound();
+        success(res, 'reset currentRound');
+    } catch (err) {
+        next(err);
+        fail(res, err);
+    };
+};
+
+//GET
+export const getHistoryByDate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        logger.debug('get history round by date');
+        const { date } = req.params;
+        const history = await getHistory();
+        const histories = history[date];
+        success(res, histories);
+    } catch (err) {
+        next(err);
+        fail(res, err);
+    };
+};
+
+export const getExistDate = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        logger.debug('get exist date from history');
+        const history = await getHistory();
+        const dates = history ? Object.keys(history) : [];
+        success(res, dates);
+    } catch (err) {
+        next(err);
+        fail(res, err);
+    };
+};
+
+export const getCurrentRound = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        logger.debug('get currentRound');
+        const currentRound = await getCurrentRoundState();
         success(res, currentRound);
     } catch (err) {
         next(err);
@@ -45,15 +93,13 @@ export const getLatest = async (req: Request, res: Response, next: NextFunction)
     };
 };
 
-export const postResetCurrentRound = async (req: Request, res: Response, next: NextFunction) => {
+//DELETE
+export const deleteCurrentRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const currentRound = await getCurrentRound();
-        const statistics = await getStatistics();
-        await saveRecords(currentRound);
-        const updatedStatistics = await updateStatistics(statistics, currentRound)
-        await setStatistics(updatedStatistics);
+        logger.debug('delete currentRound');
+        await roundModel.deleteLastRound();
         await resetCurrentRound();
-        success(res, 'reset currentRound');
+        success(res, 'delete');
     } catch (err) {
         next(err);
         fail(res, err);

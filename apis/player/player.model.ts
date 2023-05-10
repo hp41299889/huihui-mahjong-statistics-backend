@@ -3,11 +3,12 @@ import { In } from 'typeorm';
 import { Postgres } from '@databases';
 import { loggerFactory } from '@utils';
 import { Player } from './player.entity';
-import { ICreateOnePlayerDto, IUpdateOnePlayerDto } from './player.interface';
+import { ICreateOnePlayerDto } from './player.interface';
 
 const logger = loggerFactory('Model player');
 const repo = Postgres.getRepository(Player);
 
+// Create
 const createOne = (dto: ICreateOnePlayerDto) => {
     try {
         logger.debug('create one player');
@@ -17,10 +18,11 @@ const createOne = (dto: ICreateOnePlayerDto) => {
     };
 };
 
-const readAll = () => {
+// Read
+const readAll = async () => {
     try {
         logger.debug('read all players');
-        return repo.find();
+        return await repo.find();
     } catch (err) {
         throw err;
     };
@@ -28,11 +30,8 @@ const readAll = () => {
 
 const readOneByName = async (name: string) => {
     try {
-        logger.debug('read one by name');
+        logger.debug('read one player by name');
         return await repo.findOne({
-            // relations: {
-            //     rounds: true
-            // },
             where: {
                 name: name
             }
@@ -44,7 +43,7 @@ const readOneByName = async (name: string) => {
 
 const readManyByNames = async (name: string[]) => {
     try {
-        logger.debug('read many by many names');
+        logger.debug('read many players by many names');
         return repo.find({
             where: {
                 name: In(name)
@@ -55,7 +54,10 @@ const readManyByNames = async (name: string[]) => {
     };
 };
 
-const updateOneByName = async (name: string, data: IUpdateOnePlayerDto) => {
+// Update
+//TODO not finish
+const updateOneByName = async (name: string) => {
+    logger.debug('update one player by name');
     const player = await repo.findOneBy({ name: name });
     if (player) {
     }

@@ -1,6 +1,6 @@
-import { Player, playerRouter } from './player';
-import { Record, recordRouter } from './record';
-import { Round, roundRouter } from './round';
+import { playerRouter } from './player';
+import { recordRouter } from './record';
+import { roundRouter } from './round';
 
 const routes = {
     player: playerRouter,
@@ -8,13 +8,6 @@ const routes = {
     round: roundRouter
 };
 
-const entities = [
-    Player,
-    Record,
-    Round
-];
-
 export {
     routes,
-    entities
 };

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import { http, loggerFactory } from '@utils';
 import { EWind } from "./record.enum";
-import { addRecord, getCurrentRound, initCurrentRound, recoverCurrentRound, removeLastRecord, setCurrentRound, updateCurrentRound } from "@jobs/mahjong/mahjong";
+import { addRecord, getCurrentRoundState, initCurrentRound, recoverCurrentRound, removeLastRecord, setCurrentRoundState, updateCurrentRound } from "@jobs/mahjong/mahjong";
 import { IAddRecord } from "@jobs/mahjong/interface";
 
 
@@ -16,10 +16,11 @@ export const windList = [
     EWind.NORTH
 ];
 
+// POST
 export const postOneToCurrentRoound = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { roundUid } = req.params;
-        const currentRound = await getCurrentRound();
+        logger.debug('post one record to currentRound');
+        const currentRound = await getCurrentRoundState();
         const { body }: { body: IAddRecord } = req;
         const { winner, losers, point, endType } = body;
         const { circle, dealer, dealerCount } = currentRound;
@@ -35,7 +36,7 @@ export const postOneToCurrentRoound = async (req: Request, res: Response, next: 
         };
         const addedCurrentRound = await addRecord(currentRound, addRecordDto);
         const updatedCurrentRound = await updateCurrentRound(addedCurrentRound, addRecordDto);
-        await setCurrentRound(updatedCurrentRound);
+        await setCurrentRoundState(updatedCurrentRound);
         success(res, addRecordDto);
     } catch (err) {
         next(err);
@@ -43,16 +44,16 @@ export const postOneToCurrentRoound = async (req: Request, res: Response, next: 
     };
 };
 
+// DELETE
 export const deleteLastToCurrentRound = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { roundUid } = req.params;
-        // const result = await recordModel.deleteLastByRoundUid(roundUid);
-        const currentRound = await getCurrentRound();
+        logger.debug('delete last record to currentRound');
+        const currentRound = await getCurrentRoundState();
         const removed = currentRound.records[currentRound.records.length - 1];
         if (removed) {
             const recoveredCurrentRound = await recoverCurrentRound(currentRound, removed);
             const removedCurrentRound = await removeLastRecord(recoveredCurrentRound);
-            await setCurrentRound(removedCurrentRound);
+            await setCurrentRoundState(removedCurrentRound);
         } else {
             await initCurrentRound();
         };

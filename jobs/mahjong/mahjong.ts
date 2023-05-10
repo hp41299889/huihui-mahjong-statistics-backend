@@ -1,16 +1,16 @@
 import { EEndType, EWind, ICreateOneRecordDto, recordModel } from "@apis/record";
+import { ERoundStatus } from "@apis/round";
 import { IRound, roundModel } from "@apis/round";
 import { redisClient } from "@services/redis";
 import { ICurrentRound, IAddRecord, IPlayerScore } from "./interface";
-import { ERoundStatus } from "@apis/round/round.enum";
 
 const CURRENTROUND = 'currentRound';
 
-export const getCurrentRound = async (): Promise<ICurrentRound> => {
+export const getCurrentRoundState = async (): Promise<ICurrentRound> => {
     return JSON.parse(await redisClient.get(CURRENTROUND));
 };
 
-export const setCurrentRound = async (currentRound: ICurrentRound) => {
+export const setCurrentRoundState = async (currentRound: ICurrentRound) => {
     redisClient.set(CURRENTROUND, JSON.stringify(currentRound));
 };
 
@@ -20,7 +20,7 @@ export const initCurrentRound = async () => {
     if (lastRound) {
         if (!await checkRound(lastRound)) {
             const currentRound = generateCurrentRound(lastRound);
-            await setCurrentRound(currentRound);
+            await setCurrentRoundState(currentRound);
         };
     };
 };
@@ -40,15 +40,15 @@ export const removeLastRecord = async (currentRound: ICurrentRound) => {
 
 export const updateCurrentRound = async (currentRound: ICurrentRound, addRecordDto: IAddRecord) => {
     const { dealer, circle } = currentRound;
-
     if (isDealerContinue(currentRound, addRecordDto)) {
         currentRound.dealerCount++;
     } else {
         currentRound.dealerCount = 0;
         if (dealer === EWind.NORTH) {
             if (circle === EWind.NORTH) {
+                const checkedVenue = await checkVenue(currentRound);
                 const endedCurrentRound: ICurrentRound = {
-                    ...currentRound,
+                    ...checkedVenue,
                     status: ERoundStatus.END
                 };
                 return endedCurrentRound;
@@ -155,6 +155,23 @@ export const generateCurrentRound = (round: IRound) => {
             west: { ...west, ...emptyPlayer },
             north: { ...north, ...emptyPlayer }
         }
+    };
+    return currentRound;
+};
+
+const checkVenue = async (currentRound: ICurrentRound) => {
+    const { venue, records, players } = currentRound;
+    if (venue.length !== 4) {
+        const diff = 4 - venue.length;
+        const reversedRecords = records.slice().reverse();
+        for (let i = 0; i < diff; i++) {
+            const index = reversedRecords.findIndex(record => record.winner);
+            const target = reversedRecords.splice(index, 1)[0];
+            const { winner } = target;
+            const winnerWind = getPlayerWind(currentRound, winner);
+            players[winnerWind].amount -= 50;
+            venue.push(target);
+        };
     };
     return currentRound;
 };

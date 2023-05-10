@@ -2,17 +2,27 @@ import { Router } from "express";
 
 import {
     postOne,
-    getLatest,
     postResetCurrentRound,
+    getHistoryByDate,
+    getExistDate,
+    getCurrentRound,
+    deleteCurrentRound,
 } from './round.service';
 
 const router = Router();
 
 router.route('/')
-    .get(getLatest)
     .post(postOne);
 
-router.route('/reset')
+router.route('/history/existDates')
+    .get(getExistDate);
+
+router.route('/history/:date')
+    .get(getHistoryByDate);
+
+router.route('/currentRound')
+    .get(getCurrentRound)
     .post(postResetCurrentRound)
+    .delete(deleteCurrentRound);
 
 export default router;
