@@ -17,7 +17,7 @@ Danny Lu
 ``cd huihui-mahjong-statistics-backend``
 
 #### 3. Install dependencies
-``yarn``
+``yarn install``
 
 #### 4. Set environment variables
 

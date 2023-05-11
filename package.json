@@ -11,10 +11,7 @@
     "typeorm": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "migrate:generate": "yarn typeorm migration:generate ./databases/postgres/migrations/migration -d ./databases/postgres/postgres.ts",
     "migrate:run": "yarn typeorm migration:run -d ./build/databases/postgres/postgres.js",
-    "migrate:revert": "yarn typeorm migration:revert -d ./build/databases/postgres/postgres.js",
-    "docker:build": "yarn build && docker build -t hp4129889/huihui-mahjong:backend .",
-    "docker:push": "docker push hp4129889/huihui-mahjong:backend",
-    "dockerhub": "yarn build && npm run docker:build && npm run docker:push"
+    "migrate:revert": "yarn typeorm migration:revert -d ./build/databases/postgres/postgres.js"
   },
   "author": "",
   "license": "ISC",
