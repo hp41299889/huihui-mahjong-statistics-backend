@@ -70,7 +70,52 @@ export const updateStatistics = async (statistics: IStatistics, tempRound: ICurr
             statistics[name] = {
                 id,
                 name,
-                winds: {}
+                winds: {
+                    east: {
+                        round: 0,
+                        record: 0,
+                        win: 0,
+                        lose: 0,
+                        selfDrawn: 0,
+                        draw: 0,
+                        beSelfDrawn: 0,
+                        fake: 0,
+                        amount: 0
+                    },
+                    south: {
+                        round: 0,
+                        record: 0,
+                        win: 0,
+                        lose: 0,
+                        selfDrawn: 0,
+                        draw: 0,
+                        beSelfDrawn: 0,
+                        fake: 0,
+                        amount: 0
+                    },
+                    west: {
+                        round: 0,
+                        record: 0,
+                        win: 0,
+                        lose: 0,
+                        selfDrawn: 0,
+                        draw: 0,
+                        beSelfDrawn: 0,
+                        fake: 0,
+                        amount: 0
+                    },
+                    north: {
+                        round: 0,
+                        record: 0,
+                        win: 0,
+                        lose: 0,
+                        selfDrawn: 0,
+                        draw: 0,
+                        beSelfDrawn: 0,
+                        fake: 0,
+                        amount: 0
+                    }
+                }
             };
         };
 
@@ -89,20 +134,6 @@ export const updateStatistics = async (statistics: IStatistics, tempRound: ICurr
 };
 
 const updateOrCreateWindStatistics = (stats: IWindStatistics | undefined, recordsLength: number, data: Partial<IWindStatistics>): IWindStatistics => {
-    if (!stats) {
-        return {
-            round: 1,
-            record: recordsLength,
-            win: data.win || 0,
-            lose: data.lose || 0,
-            selfDrawn: data.selfDrawn || 0,
-            beSelfDrawn: data.beSelfDrawn || 0,
-            draw: data.draw || 0,
-            fake: data.fake || 0,
-            amount: data.amount || 0,
-        };
-    }
-
     stats.round++;
     stats.record += recordsLength;
     stats.win += data.win || 0;
