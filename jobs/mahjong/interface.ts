@@ -71,6 +71,10 @@ export interface IPlayerStatistics {
     createdAt?: Date;
     winds: {
         [key: string]: IWindStatistics;
+        east: IWindStatistics;
+        south: IWindStatistics;
+        west: IWindStatistics;
+        north: IWindStatistics;
     };
 };
 
