@@ -287,13 +287,16 @@ const recoverScore = async (currentRound: ICurrentRound, removed: IAddRecord) =>
 };
 
 const calculateVenue = async (currentRound: ICurrentRound, addRecordDto: IAddRecord) => {
-    const { venue, players } = currentRound;
+    const { venue, players, dealer } = currentRound;
     const { winner } = addRecordDto;
-    const winnerWind = getPlayerWind(currentRound, winner);
-    if (winnerWind) {
-        if (venue.length < 4) {
-            venue.push(addRecordDto);
-            players[winnerWind].amount -= 50;
+
+    if (venue.length < 4) {
+        const winnerWind = getPlayerWind(currentRound, winner);
+        if (winnerWind) {
+            if (!isDealer(winnerWind, dealer)) {
+                venue.push(addRecordDto);
+                players[winnerWind].amount -= 50;
+            };
         };
     };
 };
