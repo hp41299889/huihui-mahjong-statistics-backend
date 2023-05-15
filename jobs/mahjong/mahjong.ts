@@ -165,7 +165,7 @@ const checkVenue = async (currentRound: ICurrentRound) => {
         const diff = 4 - venue.length;
         const reversedRecords = records.slice().reverse();
         for (let i = 0; i < diff; i++) {
-            const index = reversedRecords.findIndex(record => record.winner);
+            const index = reversedRecords.findIndex(record => (record.endType === EEndType.WINNING && !isDealerWin(currentRound, record.winner)));
             const target = reversedRecords.splice(index, 1)[0];
             const { winner } = target;
             const winnerWind = getPlayerWind(currentRound, winner);
@@ -287,16 +287,13 @@ const recoverScore = async (currentRound: ICurrentRound, removed: IAddRecord) =>
 };
 
 const calculateVenue = async (currentRound: ICurrentRound, addRecordDto: IAddRecord) => {
-    const { venue, players, dealer } = currentRound;
+    const { venue, players } = currentRound;
     const { winner } = addRecordDto;
-
-    if (venue.length < 4) {
-        const winnerWind = getPlayerWind(currentRound, winner);
-        if (winnerWind) {
-            if (!isDealer(winnerWind, dealer)) {
-                venue.push(addRecordDto);
-                players[winnerWind].amount -= 50;
-            };
+    const winnerWind = getPlayerWind(currentRound, winner);
+    if (winnerWind) {
+        if (venue.length < 4) {
+            venue.push(addRecordDto);
+            players[winnerWind].amount -= 50;
         };
     };
 };
